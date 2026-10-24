@@ -1,0 +1,54 @@
+{
+  "name": "cypress-qa-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lean QA automation template for SaaS web apps — Cypress + TypeScript, wired against saucedemo.com out of the box",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "cypress run",
+    "test:open": "cypress open",
+    "test:smoke": "cypress run --spec \"cypress/e2e/smoke/**/*.cy.ts\" --browser chrome",
+    "test:regression": "cypress run --spec \"cypress/e2e/regression/**/*.cy.ts\"",
+    "test:api": "cypress run --spec \"cypress/e2e/api/**/*.cy.ts\" --browser chrome",
+    "test:a11y": "cypress run --spec \"cypress/e2e/accessibility/**/*.cy.ts\" --browser chrome",
+    "test:visual": "cypress run --spec \"cypress/e2e/visual/**/*.cy.ts\"",
+    "test:visual:update": "UPDATE_SNAPSHOTS=true cypress run --spec \"cypress/e2e/visual/**/*.cy.ts\"",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.js",
+    "lint:fix": "eslint . --ext .ts,.js --fix",
+    "format": "prettier --write \"**/*.{ts,js,json,yml,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,yml,md}\"",
+    "audit": "npm audit --omit=dev --audit-level=high",
+    "clean": "rm -rf cypress/screenshots cypress/videos cypress/downloads cypress/results",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,js,mjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,yml,md}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@cypress/code-coverage": "^4.0.3",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^8.72.0",
+    "@typescript-eslint/parser": "^8.72.0",
+    "cypress": "^16.2.0",
+    "cypress-axe": "^1.7.0",
+    "cypress-image-diff-js": "^2.8.0",
+    "dotenv": "^18.0.9",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-cypress": "^7.0.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3",
+    "zod": "^4.6.7"
+  }
+}

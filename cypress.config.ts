@@ -1,0 +1,69 @@
+import { defineConfig } from 'cypress';
+import * as dotenv from 'dotenv';
+
+dotenv.config({ path: '.env.local' });
+
+const isCI = !!process.env.CI;
+
+export default defineConfig({
+  e2e: {
+    baseUrl: process.env.BASE_URL || 'https://www.saucedemo.com',
+    specPattern: 'cypress/e2e/**/*.cy.{ts,tsx}',
+    supportFile: 'cypress/support/e2e.ts',
+    setupNodeEvents(on, config) {
+      // Code coverage
+      require('@cypress/code-coverage/task')(on, config);
+
+      // Image diff for visual regression
+      const { compareImages, createImageDiff } = require('cypress-image-diff-js');
+      on('task', {
+        compareImages,
+        createImageDiff,
+      });
+
+      // Update snapshots when env var is set
+      if (process.env.UPDATE_SNAPSHOTS === 'true') {
+        config.env.updateSnapshots = true;
+      }
+
+      return config;
+    },
+    video: !process.env.CYPRESS_DISABLE_VIDEO,
+    screenshotOnRunFailure: true,
+    screenshotsFolder: 'cypress/screenshots',
+    videosFolder: 'cypress/videos',
+    defaultCommandTimeout: 10000,
+    requestTimeout: 15000,
+    responseTimeout: 15000,
+    viewportWidth: 1280,
+    viewportHeight: 720,
+    retries: isCI ? 2 : 0,
+  },
+
+  component: {
+    devServer: {
+      framework: 'react',
+      bundler: 'vite',
+    },
+    specPattern: 'cypress/component/**/*.cy.{ts,tsx}',
+  },
+
+  env: {
+    apiBaseUrl: process.env.API_BASE_URL || 'https://jsonplaceholder.typicode.com',
+    testUser: process.env.TEST_USER || 'standard_user',
+    testPass: process.env.TEST_PASS || 'secret_sauce',
+  },
+
+  retries: {
+    runMode: isCI ? 2 : 0,
+    openMode: 0,
+  },
+
+  reporter: isCI ? 'junit' : 'spec',
+  reporterOptions: {
+    mochaFile: 'cypress/results/results-[hash].xml',
+    toConsole: true,
+  },
+
+  watchForFileChanges: !isCI,
+});
