@@ -34,13 +34,13 @@ export class InventoryPage extends BasePage {
   }
 
   addToCart(itemName: string) {
-    const buttonSelector = `${this.selectors.addToCartButton}${itemName.toLowerCase().replace(/\s+/g, '-')}`;
+    const buttonSelector = `[data-test="add-to-cart-${itemName.toLowerCase().replace(/\s+/g, '-')}"]`;
     cy.get(buttonSelector).click();
     return this;
   }
 
   removeFromCart(itemName: string) {
-    const buttonSelector = `${this.selectors.removeButton}${itemName.toLowerCase().replace(/\s+/g, '-')}`;
+    const buttonSelector = `[data-test="remove-${itemName.toLowerCase().replace(/\s+/g, '-')}"]`;
     cy.get(buttonSelector).click();
     return this;
   }
@@ -51,6 +51,8 @@ export class InventoryPage extends BasePage {
 
   goToCart() {
     cy.get(this.selectors.cartLink).click();
+    cy.url().should('include', '/cart.html');
+    cy.get('[data-test="cart-list"], [data-test="cart-container"]').should('exist');
     return this;
   }
 

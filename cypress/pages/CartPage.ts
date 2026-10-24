@@ -13,7 +13,7 @@ export class CartPage extends BasePage {
   };
 
   shouldBeVisible() {
-    cy.get(this.selectors.cartContainer).should('be.visible');
+    cy.get('[data-test="cart-list"], [data-test="cart-container"]').should('be.visible');
     return this;
   }
 
@@ -30,7 +30,7 @@ export class CartPage extends BasePage {
   }
 
   removeItem(itemName: string) {
-    const buttonSelector = `${this.selectors.removeButton}${itemName.toLowerCase().replace(/\s+/g, '-')}`;
+    const buttonSelector = `[data-test="remove-${itemName.toLowerCase().replace(/\s+/g, '-')}"]`;
     cy.get(buttonSelector).click();
     return this;
   }

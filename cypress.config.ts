@@ -14,11 +14,24 @@ export default defineConfig({
       // Code coverage
       require('@cypress/code-coverage/task')(on, config);
 
-      // Image diff for visual regression
-      const { compareImages, createImageDiff } = require('cypress-image-diff-js');
+      // Simple log task
       on('task', {
-        compareImages,
-        createImageDiff,
+        log: (message) => {
+          console.log(message);
+          return null;
+        },
+      });
+
+      // Image diff task for visual regression (safe wrapper, no Cypress global needed)
+      on('task', {
+        compareImages: (options) => {
+          const { compareImages } = require('cypress-image-diff-js');
+          return compareImages(options);
+        },
+        createImageDiff: (options) => {
+          const { createImageDiff } = require('cypress-image-diff-js');
+          return createImageDiff(options);
+        },
       });
 
       // Update snapshots when env var is set

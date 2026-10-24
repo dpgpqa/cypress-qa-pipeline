@@ -78,7 +78,7 @@ describe('@visual Visual Regression Tests', () => {
 
     const sortOptions = ['az', 'za', 'lohi', 'hilo'] as const;
     sortOptions.forEach((option: string, _index: number) => {
-      inventoryPage.sortBy(option);
+      inventoryPage.sortBy(option as 'az' | 'za' | 'lohi' | 'hilo');
       cy.compareSnapshot(`${visualBaselines.inventoryPage}-${option}`);
     });
   });
