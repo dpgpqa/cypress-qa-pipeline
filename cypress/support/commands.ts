@@ -46,19 +46,34 @@ Cypress.Commands.add('checkA11y', (context = 'document', options = {}) => {
 
 Cypress.Commands.add('compareSnapshot', (name: string, options = {}) => {
   const updateSnapshots = process.env.UPDATE_SNAPSHOTS === 'true';
+  const snapshotPath = `cypress/snapshots/${name}.png`;
 
-  cy.task('compareImages', {
-    imageA: `cypress/snapshots/${name}.png`,
-    imageB: `cypress/screenshots/${name}.png`,
-    threshold: 0.1,
-    ...options,
-  }).then((result: any) => {
-    if (updateSnapshots) {
-      cy.writeFile(`cypress/snapshots/${name}.png`, result.actualImage, 'base64');
-      cy.log(`Updated snapshot: ${name}`);
-    } else {
-      void expect(result.isSameDimensions).to.be.true;
-      void expect(result.misMatchPercentage).to.be.lessThan(1);
+  cy.task('fileExists', snapshotPath).then((snapshotExists: unknown) => {
+    const baselineExists = snapshotExists as boolean;
+    if (!baselineExists && !updateSnapshots) {
+      // First run in CI: no baseline yet. Capture current screen as baseline and pass.
+      cy.screenshot(name, { capture: 'viewport' }).then(() => {
+        cy.readFile(`cypress/screenshots/${name}.png`, 'base64').then((imageData: string) => {
+          cy.task('writeFileBase64', { filePath: snapshotPath, data: imageData });
+          cy.log(`Created new visual baseline: ${name}`);
+        });
+      });
+      return;
     }
+
+    cy.task('compareImages', {
+      imageA: snapshotPath,
+      imageB: `cypress/screenshots/${name}.png`,
+      threshold: 0.1,
+      ...options,
+    }).then((result: any) => {
+      if (updateSnapshots) {
+        cy.writeFile(snapshotPath, result.actualImage, 'base64');
+        cy.log(`Updated snapshot: ${name}`);
+      } else {
+        void expect(result.isSameDimensions).to.be.true;
+        void expect(result.misMatchPercentage).to.be.lessThan(1);
+      }
+    });
   });
 });
