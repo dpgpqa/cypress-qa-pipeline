@@ -22,6 +22,23 @@ export default defineConfig({
         },
       });
 
+      // Check if a file exists (used for visual baseline detection)
+      on('task', {
+        fileExists: (filePath) => {
+          const fs = require('fs');
+          return fs.existsSync(filePath);
+        },
+      });
+
+      // Write a base64-encoded file (used for creating visual baselines)
+      on('task', {
+        writeFileBase64: ({ filePath, data }) => {
+          const fs = require('fs');
+          fs.writeFileSync(filePath, Buffer.from(data, 'base64'));
+          return null;
+        },
+      });
+
       // Image diff task for visual regression (safe wrapper, no Cypress global needed)
       on('task', {
         compareImages: (options) => {
