@@ -39,6 +39,7 @@ describe('@regression Full Checkout Flow', () => {
     );
     checkoutInfoPage.continue();
     cy.url().should('include', '/checkout-step-two.html');
+    cy.get('[data-test="checkout-overview-container"]').should('be.visible');
     checkoutOverviewPage.shouldBeVisible();
     checkoutOverviewPage.shouldHaveItems(1);
     checkoutOverviewPage.finish();
@@ -70,6 +71,7 @@ describe('@regression Full Checkout Flow', () => {
     );
     checkoutInfoPage.continue();
     cy.url().should('include', '/checkout-step-two.html');
+    cy.get('[data-test="checkout-overview-container"]').should('be.visible');
     checkoutOverviewPage.shouldHaveItems(selectedProducts.length);
     checkoutOverviewPage.finish();
     checkoutCompletePage.shouldHaveSuccessMessage(
@@ -104,6 +106,7 @@ describe('@regression Full Checkout Flow', () => {
     );
     checkoutInfoPage.continue();
     cy.url().should('include', '/checkout-step-two.html');
+    cy.get('[data-test="checkout-overview-container"]').should('be.visible');
     checkoutOverviewPage.cancel();
     cartPage.shouldBeVisible();
     cartPage.shouldBeOnCartPage();

@@ -50,7 +50,7 @@ export class CheckoutOverviewPage extends BasePage {
 
   cancel() {
     cy.get(this.selectors.cancelButton).click({ force: true });
-    cy.url().should('include', '/cart.html');
+    cy.url().should('include', '/inventory.html');
     return this;
   }
 
