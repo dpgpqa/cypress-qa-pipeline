@@ -1,5 +1,6 @@
 import { defineConfig } from 'cypress';
 import * as dotenv from 'dotenv';
+import { GenerateCtrfReport } from 'cypress-ctrf-json-reporter';
 
 dotenv.config({ path: '.env.local' });
 
@@ -49,6 +50,13 @@ export default defineConfig({
           const { createImageDiff } = require('cypress-image-diff-js');
           return createImageDiff(options);
         },
+      });
+
+      // CTRF report generation
+      new GenerateCtrfReport({
+        on,
+        outputDir: 'ctrf',
+        outputFile: 'ctrf-report.json',
       });
 
       // Update snapshots when env var is set
