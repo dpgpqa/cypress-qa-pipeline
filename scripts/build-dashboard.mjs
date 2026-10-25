@@ -38,6 +38,7 @@ for (const suite of suites) {
     const report = readJson(`${suiteDir}/${file}`);
     if (!report) continue;
     const results = report.results || report.tests || [];
+    if (!Array.isArray(results)) continue;
     for (const r of results) {
       allResults.push({
         suite,
