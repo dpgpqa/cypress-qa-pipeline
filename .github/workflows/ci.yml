@@ -21,6 +21,11 @@ env:
   NODE_VERSION: '22'
   CYPRESS_CACHE_FOLDER: ~/.cache/Cypress
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   lint-and-typecheck:
     name: Lint & Typecheck
