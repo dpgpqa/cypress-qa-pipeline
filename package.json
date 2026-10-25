@@ -33,6 +33,11 @@
       "prettier --write"
     ]
   },
+  "overrides": {
+    "cypress-axe": {
+      "cypress": "$cypress"
+    }
+  },
   "devDependencies": {
     "@cypress/code-coverage": "^4.0.3",
     "@types/node": "^22.14.0",
