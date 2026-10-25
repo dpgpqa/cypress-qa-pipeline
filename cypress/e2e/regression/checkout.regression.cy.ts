@@ -38,6 +38,7 @@ describe('@regression Full Checkout Flow', () => {
       checkoutInfo.postalCode
     );
     checkoutInfoPage.continue();
+    cy.url().should('include', '/checkout-step-two.html');
     checkoutOverviewPage.shouldBeVisible();
     checkoutOverviewPage.shouldHaveItems(1);
     checkoutOverviewPage.finish();
@@ -68,6 +69,7 @@ describe('@regression Full Checkout Flow', () => {
       checkoutInfo.postalCode
     );
     checkoutInfoPage.continue();
+    cy.url().should('include', '/checkout-step-two.html');
     checkoutOverviewPage.shouldHaveItems(selectedProducts.length);
     checkoutOverviewPage.finish();
     checkoutCompletePage.shouldHaveSuccessMessage(
@@ -101,6 +103,7 @@ describe('@regression Full Checkout Flow', () => {
       checkoutInfo.postalCode
     );
     checkoutInfoPage.continue();
+    cy.url().should('include', '/checkout-step-two.html');
     checkoutOverviewPage.cancel();
     cartPage.shouldBeVisible();
     cartPage.shouldBeOnCartPage();
