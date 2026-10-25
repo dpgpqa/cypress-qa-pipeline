@@ -51,13 +51,9 @@ Cypress.Commands.add('compareSnapshot', (name: string, options = {}) => {
   cy.task('fileExists', snapshotPath).then((snapshotExists: unknown) => {
     const baselineExists = snapshotExists as boolean;
     if (!baselineExists && !updateSnapshots) {
-      // First run in CI: no baseline yet. Capture current screen as baseline and pass.
-      cy.screenshot(name, { capture: 'viewport' }).then(() => {
-        cy.readFile(`cypress/screenshots/${name}.png`, 'base64').then((imageData: string) => {
-          cy.task('writeFileBase64', { filePath: snapshotPath, data: imageData });
-          cy.log(`Created new visual baseline: ${name}`);
-        });
-      });
+      // No baseline yet — log and pass. Baselines must be created intentionally
+      // via UPDATE_SNAPSHOTS=true and committed after review.
+      cy.log(`No visual baseline for "${name}" — skipping comparison`);
       return;
     }
 

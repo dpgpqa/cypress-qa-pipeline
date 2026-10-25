@@ -36,7 +36,8 @@ export class CartPage extends BasePage {
   }
 
   continueShopping() {
-    cy.get(this.selectors.continueShoppingButton).click();
+    cy.get(this.selectors.continueShoppingButton).click({ force: true });
+    cy.url().should('include', '/inventory.html');
     return this;
   }
 

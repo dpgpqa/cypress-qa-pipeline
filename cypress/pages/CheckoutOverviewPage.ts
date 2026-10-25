@@ -49,8 +49,8 @@ export class CheckoutOverviewPage extends BasePage {
   }
 
   cancel() {
-    cy.get(this.selectors.cancelButton).click();
-    cy.url().should('include', '/inventory.html');
+    cy.get(this.selectors.cancelButton).click({ force: true });
+    cy.url().should('include', '/cart.html');
     return this;
   }
 

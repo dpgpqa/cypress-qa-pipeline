@@ -82,6 +82,9 @@ describe('@regression Full Checkout Flow', () => {
     inventoryPage.goToCart();
     cartPage.checkout();
     checkoutInfoPage.cancel();
+    cartPage.shouldBeVisible();
+    cartPage.shouldBeOnCartPage();
+    cartPage.continueShopping();
     inventoryPage.shouldBeVisible();
     inventoryPage.shouldBeOnInventoryPage();
   });
@@ -99,6 +102,9 @@ describe('@regression Full Checkout Flow', () => {
     );
     checkoutInfoPage.continue();
     checkoutOverviewPage.cancel();
+    cartPage.shouldBeVisible();
+    cartPage.shouldBeOnCartPage();
+    cartPage.continueShopping();
     inventoryPage.shouldBeVisible();
     inventoryPage.shouldBeOnInventoryPage();
   });
