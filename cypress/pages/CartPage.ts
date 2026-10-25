@@ -4,7 +4,7 @@ export class CartPage extends BasePage {
   private selectors = {
     cartContainer: '[data-test="cart-container"]',
     cartList: '[data-test="cart-list"]',
-    cartItem: '[data-test="cart-item"]',
+    cartItem: '[data-test="inventory-item"]',
     cartItemName: '[data-test="inventory-item-name"]',
     cartItemPrice: '[data-test="inventory-item-price"]',
     removeButton: '[data-test="remove-"]',
@@ -47,9 +47,7 @@ export class CartPage extends BasePage {
   }
 
   shouldHaveItems(count: number) {
-    cy.get('[data-test="cart-item"], [data-test="cart-list"] [data-test="cart-item"]').should(
-      'be.visible'
-    );
+    cy.get(this.selectors.cartItem).should('be.visible');
     this.getCartItems().should('have.length', count);
     return this;
   }

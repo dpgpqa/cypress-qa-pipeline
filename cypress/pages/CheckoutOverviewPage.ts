@@ -41,6 +41,7 @@ export class CheckoutOverviewPage extends BasePage {
 
   finish() {
     cy.get(this.selectors.finishButton).click();
+    cy.url().should('include', '/checkout-complete.html');
     cy.get('[data-test="checkout-complete-container"], [data-test="checkout-complete"]').should(
       'exist'
     );
@@ -49,6 +50,7 @@ export class CheckoutOverviewPage extends BasePage {
 
   cancel() {
     cy.get(this.selectors.cancelButton).click();
+    cy.url().should('include', '/inventory.html');
     return this;
   }
 

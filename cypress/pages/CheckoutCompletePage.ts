@@ -23,6 +23,7 @@ export class CheckoutCompletePage extends BasePage {
 
   backHome() {
     cy.get(this.selectors.backHomeButton).click();
+    cy.url().should('include', '/inventory.html');
     return this;
   }
 
