@@ -108,9 +108,6 @@ describe('@regression Full Checkout Flow', () => {
     cy.url().should('include', '/checkout-step-two.html');
     cy.get('[data-test="subtotal-label"]').should('be.visible');
     checkoutOverviewPage.cancel();
-    cartPage.shouldBeVisible();
-    cartPage.shouldBeOnCartPage();
-    cartPage.continueShopping();
     inventoryPage.shouldBeVisible();
     inventoryPage.shouldBeOnInventoryPage();
   });
