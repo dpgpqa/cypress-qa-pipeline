@@ -37,7 +37,7 @@ Cypress.Commands.add('logout', () => {
   cy.url().should('eq', Cypress.config('baseUrl') + '/');
 });
 
-Cypress.Commands.add('checkA11y', (context = 'document', _options = {}) => {
+Cypress.Commands.add('checkA11y', (context = 'body', _options = {}) => {
   cy.get(context).then(($el) => {
     const issues: string[] = [];
 
