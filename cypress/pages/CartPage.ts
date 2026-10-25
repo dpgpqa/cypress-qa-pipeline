@@ -42,10 +42,14 @@ export class CartPage extends BasePage {
 
   checkout() {
     cy.get(this.selectors.checkoutButton).click();
+    cy.get('[data-test="checkout-info-container"], [data-test="checkout-info"]').should('exist');
     return this;
   }
 
   shouldHaveItems(count: number) {
+    cy.get('[data-test="cart-item"], [data-test="cart-list"] [data-test="cart-item"]').should(
+      'be.visible'
+    );
     this.getCartItems().should('have.length', count);
     return this;
   }

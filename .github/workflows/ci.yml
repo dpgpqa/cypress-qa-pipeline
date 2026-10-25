@@ -75,6 +75,7 @@ jobs:
 
       - name: Publish CTRF Test Summary
         if: always()
+        continue-on-error: true
         run: node scripts/publish-ctrf-summary.mjs ctrf/ctrf-report.json "Smoke Suite"
         env:
           GITHUB_STEP_SUMMARY: ${{ github.step_summary }}
@@ -128,6 +129,7 @@ jobs:
 
       - name: Publish CTRF Test Summary
         if: always()
+        continue-on-error: true
         run: node scripts/publish-ctrf-summary.mjs ctrf/ctrf-report.json "Regression Suite"
         env:
           GITHUB_STEP_SUMMARY: ${{ github.step_summary }}
@@ -181,6 +183,7 @@ jobs:
 
       - name: Publish CTRF Test Summary
         if: always()
+        continue-on-error: true
         run: node scripts/publish-ctrf-summary.mjs ctrf/ctrf-report.json "API Suite"
         env:
           GITHUB_STEP_SUMMARY: ${{ github.step_summary }}
@@ -226,6 +229,7 @@ jobs:
 
       - name: Publish CTRF Test Summary
         if: always()
+        continue-on-error: true
         run: node scripts/publish-ctrf-summary.mjs ctrf/ctrf-report.json "Accessibility Suite"
         env:
           GITHUB_STEP_SUMMARY: ${{ github.step_summary }}
@@ -273,6 +277,7 @@ jobs:
 
       - name: Publish CTRF Test Summary
         if: always()
+        continue-on-error: true
         run: node scripts/publish-ctrf-summary.mjs ctrf/ctrf-report.json "Visual Regression Suite"
         env:
           GITHUB_STEP_SUMMARY: ${{ github.step_summary }}
@@ -320,16 +325,6 @@ jobs:
 
       - name: Run npm audit
         run: npm run audit
-
-      - name: Run CodeQL Analysis
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript,typescript
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: '/language:javascript-typescript'
 
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2

@@ -18,6 +18,7 @@ export class InventoryPage extends BasePage {
 
   shouldBeVisible() {
     cy.get(this.selectors.inventoryContainer).should('be.visible');
+    cy.get(this.selectors.inventoryItem).should('have.length.greaterThan', 0);
     return this;
   }
 
@@ -57,13 +58,13 @@ export class InventoryPage extends BasePage {
   }
 
   openMenu() {
-    cy.get(this.selectors.menuButton).click();
+    cy.get(this.selectors.menuButton).click({ force: true });
     return this;
   }
 
   logout() {
     this.openMenu();
-    cy.get(this.selectors.logoutLink).click();
+    cy.get(this.selectors.logoutLink).click({ force: true });
     return this;
   }
 

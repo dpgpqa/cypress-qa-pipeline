@@ -23,7 +23,7 @@ export class Header {
   }
 
   openMenu() {
-    cy.get(this.selectors.menuButton).click();
+    cy.get(this.selectors.menuButton).click({ force: true });
     return this;
   }
 

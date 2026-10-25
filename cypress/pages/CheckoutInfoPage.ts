@@ -40,6 +40,9 @@ export class CheckoutInfoPage extends BasePage {
 
   continue() {
     cy.get(this.selectors.continueButton).click();
+    cy.get('[data-test="checkout-overview-container"], [data-test="checkout-overview"]').should(
+      'exist'
+    );
     return this;
   }
 
