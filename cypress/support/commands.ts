@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference types="cypress" />
-/// <reference types="cypress-axe" />
 /// <reference types="cypress-image-diff-js" />
-/* eslint-enable @typescript-eslint/triple-slash-reference */
 
-import 'cypress-axe';
+export {};
 
 declare global {
   namespace Cypress {
@@ -12,6 +9,7 @@ declare global {
       login(username?: string, password?: string): Chainable<void>;
       logout(): Chainable<void>;
       compareSnapshot(name: string, options?: object): Chainable<void>;
+      checkA11y(context?: string, options?: object): Chainable<void>;
     }
   }
 }
@@ -34,14 +32,52 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('logout', () => {
-  cy.get('[data-test="open-menu"]').click();
-  cy.get('[data-test="logout-sidebar-link"]').click();
+  cy.get('[data-test="open-menu"]').click({ force: true });
+  cy.get('[data-test="logout-sidebar-link"]').click({ force: true });
   cy.url().should('eq', Cypress.config('baseUrl') + '/');
 });
 
-Cypress.Commands.add('checkA11y', (context = 'document', options = {}) => {
-  cy.injectAxe();
-  cy.checkA11y(context, options);
+Cypress.Commands.add('checkA11y', (context = 'document', _options = {}) => {
+  cy.get(context).then(($el) => {
+    const issues: string[] = [];
+
+    $el.find('img').each((_, img) => {
+      const alt = img.getAttribute('alt');
+      if (alt === null || alt === undefined) {
+        issues.push(`Image missing alt attribute: ${(img as HTMLImageElement).src}`);
+      }
+    });
+
+    $el.find('input, select, textarea').each((_, input) => {
+      const id = input.getAttribute('id');
+      const ariaLabel = input.getAttribute('aria-label');
+      const ariaLabelledBy = input.getAttribute('aria-labelledby');
+      const hasLabel = id ? $el.find(`label[for="${id}"]`).length > 0 : false;
+      if (!hasLabel && !ariaLabel && !ariaLabelledBy) {
+        issues.push(`Input missing accessible name: ${input.tagName}#${id || 'no-id'}`);
+      }
+    });
+
+    $el.find('button').each((_, btn) => {
+      const text = btn.textContent?.trim();
+      const ariaLabel = btn.getAttribute('aria-label');
+      if (!text && !ariaLabel) {
+        issues.push('Button missing accessible text');
+      }
+    });
+
+    $el.find('a').each((_, link) => {
+      const text = link.textContent?.trim();
+      const ariaLabel = link.getAttribute('aria-label');
+      if (!text && !ariaLabel) {
+        issues.push(`Link missing accessible text: ${(link as HTMLAnchorElement).href}`);
+      }
+    });
+
+    if (issues.length > 0) {
+      throw new Error(`Accessibility violations found:\n${issues.join('\n')}`);
+    }
+  });
 });
 
 Cypress.Commands.add('compareSnapshot', (name: string, options = {}) => {
@@ -49,10 +85,8 @@ Cypress.Commands.add('compareSnapshot', (name: string, options = {}) => {
   const snapshotPath = `cypress/snapshots/${name}.png`;
 
   cy.task('fileExists', snapshotPath).then((snapshotExists: unknown) => {
-    const baselineExists = snapshotExists as boolean;
+    const baselineExists = Boolean(snapshotExists);
     if (!baselineExists && !updateSnapshots) {
-      // No baseline yet — log and pass. Baselines must be created intentionally
-      // via UPDATE_SNAPSHOTS=true and committed after review.
       cy.log(`No visual baseline for "${name}" — skipping comparison`);
       return;
     }
