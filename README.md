@@ -1,5 +1,8 @@
 # Cypress QA Pipeline
 
+[![CI](https://github.com/dpgpqa/cypress-qa-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/dpgpqa/cypress-qa-pipeline/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 A lean, production-ready QA automation template for SaaS web apps — **Cypress + TypeScript**, wired against [saucedemo.com](https://www.saucedemo.com) out of the box.
 
 ## Features
@@ -7,19 +10,21 @@ A lean, production-ready QA automation template for SaaS web apps — **Cypress 
 - **Page Object Model** — Clean, maintainable page objects for all saucedemo pages
 - **TypeScript** — Full type safety with strict mode
 - **API Testing** — Typed API clients for JSONPlaceholder and SauceDemo
-- **Accessibility Testing** — axe-core integration for WCAG 2.1 AA compliance
+- **Accessibility Testing** — Custom DOM-based a11y checks for WCAG 2.1 AA compliance
 - **Visual Regression** — Pixel-perfect snapshot testing with cypress-image-diff-js
 - **Test Data Factories** — Centralized test data with Faker-like generators
 - **CI/CD Pipeline** — GitHub Actions with parallel job execution
-- **Security Scanning** — CodeQL, Gitleaks, npm audit
+- **Security Scanning** — Gitleaks, npm audit
 - **Performance Budgets** — Lighthouse CI integration
 - **Code Coverage** — @cypress/code-coverage with Istanbul
+- **CTRF Reporting** — Common Test Report Format + GitHub Actions Job Summaries
+- **Quality Observability Dashboard** — Bento Grid UI published to GitHub Pages
 
 ## Quick Start
 
 ```bash
 # Clone and install
-git clone https://github.com/your-org/cypress-qa-pipeline.git
+git clone https://github.com/dpgpqa/cypress-qa-pipeline.git
 cd cypress-qa-pipeline
 npm ci
 
@@ -52,10 +57,14 @@ cypress-qa-pipeline/
 │   ├── fixtures/         # Static test data
 │   ├── utils/            # Helper functions
 │   └── support/          # Commands, hooks, config
+├── scripts/
+│   ├── build-dashboard.mjs     # Quality Observability Dashboard builder
+│   └── publish-ctrf-summary.mjs # CTRF GitHub Job Summary publisher
 ├── cypress.config.ts     # Cypress configuration
 ├── tsconfig.json         # TypeScript config
 ├── eslint.config.mjs     # ESLint config
 ├── .prettierrc           # Prettier config
+├── .npmrc                # npm config (legacy-peer-deps)
 └── package.json
 ```
 
@@ -102,8 +111,9 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push/PR:
 4. **API Tests** — Contract validation
 5. **Accessibility Tests** — WCAG compliance
 6. **Visual Regression** — Snapshot comparison
-7. **Security Scan** — CodeQL, Gitleaks, npm audit
+7. **Security Scan** — Gitleaks, npm audit
 8. **Lighthouse CI** — Performance budgets
+9. **Deploy Reports** — Quality Observability Dashboard to GitHub Pages
 
 Jobs run in parallel where possible. Required jobs must pass before merge.
 
@@ -188,6 +198,20 @@ npm run format:check
 ## Husky Git Hooks
 
 Pre-commit runs lint-staged on changed files. Prepare commit message with conventional commits.
+
+## Quality Observability Dashboard
+
+The CI pipeline publishes an interactive Dark Mode dashboard to GitHub Pages with:
+
+- **KPI Cards** — Total Tests, Pass Rate %, Failed, Flaky Tests, Security Alerts
+- **Charts** — Tests per suite distribution, global status pie chart
+- **Filterable Table** — Filter by suite and status (passed/failed/skipped)
+- **Stack Traces** — Clean error details for failed tests
+- **Security Section** — Link to OWASP ZAP report
+
+Dashboard URL: `https://dpgpqa.github.io/cypress-qa-pipeline/`
+
+_(Enable GitHub Pages in Settings → Pages, branch `gh-pages`, if the site returns 404)_
 
 ## Contributing
 
