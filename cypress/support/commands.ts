@@ -52,8 +52,14 @@ Cypress.Commands.add('checkA11y', (context = 'body', _options = {}) => {
       const id = input.getAttribute('id');
       const ariaLabel = input.getAttribute('aria-label');
       const ariaLabelledBy = input.getAttribute('aria-labelledby');
+      const inputType = input.getAttribute('type');
+      const inputValue = input.getAttribute('value');
       const hasLabel = id ? $el.find(`label[for="${id}"]`).length > 0 : false;
-      if (!hasLabel && !ariaLabel && !ariaLabelledBy) {
+      const hasValue =
+        inputValue &&
+        inputValue.trim().length > 0 &&
+        (inputType === 'submit' || inputType === 'button');
+      if (!hasLabel && !ariaLabel && !ariaLabelledBy && !hasValue) {
         issues.push(`Input missing accessible name: ${input.tagName}#${id || 'no-id'}`);
       }
     });
