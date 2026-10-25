@@ -2,7 +2,7 @@ import { BasePage } from './BasePage';
 
 export class CheckoutOverviewPage extends BasePage {
   private selectors = {
-    checkoutOverviewContainer: '[data-test="checkout-overview-container"]',
+    checkoutOverviewContainer: '[data-test="subtotal-label"]',
     summaryInfo: '[data-test="summary-info"]',
     summarySubtotal: '[data-test="subtotal-label"]',
     summaryTax: '[data-test="tax-label"]',
