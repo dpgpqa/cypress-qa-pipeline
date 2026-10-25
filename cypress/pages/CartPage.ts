@@ -13,7 +13,7 @@ export class CartPage extends BasePage {
   };
 
   shouldBeVisible() {
-    cy.get('[data-test="cart-list"], [data-test="cart-container"]').should('be.visible');
+    cy.get(this.selectors.checkoutButton).should('be.visible');
     return this;
   }
 
