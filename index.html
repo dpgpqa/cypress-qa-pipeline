@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quality Observability Dashboard — Cypress QA Pipeline</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; }
+    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+    .card-pass { border-left: 4px solid #22c55e; }
+    .card-fail { border-left: 4px solid #ef4444; }
+    .btn-active { background: #3b82f6; color: white; }
+    .fade-in { animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .test-row { transition: all 0.2s; }
+    .test-row:hover { background: rgba(255,255,255,0.03); }
+    .status-badge { padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+    .status-passed { background: #22c55e20; color: #4ade80; border: 1px solid #22c55e40; }
+    .status-failed { background: #ef444420; color: #f87171; border: 1px solid #ef444440; }
+    .status-skipped { background: #f59e0b20; color: #fbbf24; border: 1px solid #f59e0b40; }
+    .generated-at { font-size: 0.875rem; color: #94a3b8; }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8 fade-in">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold text-white tracking-tight">Quality Observability</h1>
+          <p class="text-slate-400 mt-1">Dashboard de calidad — Cypress QA Pipeline</p>
+          <p class="text-xs text-slate-500 mt-2">Última ejecución CI: <span class="text-white font-mono">2026-10-25T04:32:00.068Z</span></p>
+        </div>
+        <div class="flex gap-2">
+          <span class="px-3 py-1 rounded-full bg-slate-700 text-slate-300 text-sm">Cypress 16</td>
+          <span class="px-3 py-1 rounded-full bg-blue-600/20 text-blue-400 text-sm border border-blue-500/30">CTRF</span>
+          <span class="px-3 py-1 rounded-full bg-green-600/20 text-green-400 text-sm border border-green-500/30">100% Passed</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8 fade-in">
+      <div class="glass p-6 rounded-xl card-pass h-full">
+        <p class="text-slate-400 text-sm font-medium mb-1">Total Tests</p>
+        <p class="text-3xl font-bold text-white">42</p>
+      </div>
+      <div class="glass p-6 rounded-xl card-pass h-full">
+        <p class="text-slate-400 text-sm font-medium mb-1">Pass Rate</p>
+        <p class="text-3xl font-bold text-green-400">100.0%</p>
+      </div>
+      <div class="glass p-6 rounded-xl card-pass h-full">
+        <p class="text-slate-400 text-sm font-medium mb-1">Fallidos</p>
+        <p class="text-3xl font-bold text-green-400">0</p>
+      </div>
+      <div class="glass p-6 rounded-xl card-pass h-full">
+        <p class="text-slate-400 text-sm font-medium mb-1">Skipped</p>
+        <p class="text-3xl font-bold text-green-400">0</p>
+      </div>
+      <div class="glass p-6 rounded-xl card-pass h-full">
+        <p class="text-slate-400 text-sm font-medium mb-1">Lighthouse Score</p>
+        <p class="text-3xl font-bold text-green-400">99</p>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 fade-in">
+      <div class="glass p-6 rounded-xl h-64">
+        <h3 class="text-slate-300 font-semibold mb-4">Tests por Suite</h3>
+        <canvas id="suiteChart"></canvas>
+      </div>
+      <div class="glass p-6 rounded-xl h-64">
+        <h3 class="text-slate-300 font-semibold mb-4">Estado Global</h3>
+        <canvas id="statusChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Test Table -->
+    <div class="fade-in">
+      <div class="flex gap-1 mb-4">
+        <button onclick="filterSuite('all')" id="tab-all" class="suite-tab px-4 py-2 rounded-lg text-sm font-medium transition-all btn-active">Todo (42)</button>
+        <button onclick="filterSuite('smoke')" id="tab-smoke" class="suite-tab px-4 py-2 rounded-lg text-sm font-medium transition-all bg-slate-700/50 text-slate-400 hover:bg-slate-600">Smoke (13)</button>
+        <button onclick="filterSuite('regression')" id="tab-regression" class="suite-tab px-4 py-2 rounded-lg text-sm font-medium transition-all bg-slate-700/50 text-slate-400 hover:bg-slate-600">Regression (6)</button>
+        <button onclick="filterSuite('api')" id="tab-api" class="suite-tab px-4 py-2 rounded-lg text-sm font-medium transition-all bg-slate-700/50 text-slate-400 hover:bg-slate-600">API (12)</button>
+        <button onclick="filterSuite('a11y')" id="tab-a11y" class="suite-tab px-4 py-2 rounded-lg text-sm font-medium transition-all bg-slate-700/50 text-slate-400 hover:bg-slate-600">A11y (3)</button>
+        <button onclick="filterSuite('visual')" id="tab-visual" class="suite-tab px-4 py-2 rounded-lg text-sm font-medium transition-all bg-slate-700/50 text-slate-400 hover:bg-slate-600">Visual (8)</button>
+      </div>
+
+      <div class="glass rounded-xl overflow-hidden">
+        <table class="w-full text-left">
+          <thead class="bg-slate-800/50">
+            <tr>
+              <th class="px-4 py-3 text-slate-400 text-sm font-semibold">Test</th>
+              <th class="px-4 py-3 text-slate-400 text-sm font-semibold">Suite</th>
+              <th class="px-4 py-3 text-slate-400 text-sm font-semibold">Estado</th>
+              <th class="px-4 py-3 text-slate-400 text-sm font-semibold">Duración</th>
+              <th class="px-4 py-3 text-slate-400 text-sm font-semibold">Archivo</th>
+            </tr>
+          </thead>
+          <tbody id="testTableBody" class="divide-y divide-slate-700/50">
+            <tr class="test-row group data-suite="smoke" data-status="passed">
+              <td class="px-4 py-3 text-sm">should display all 6 products</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Smoke</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">1061ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="smoke" data-status="passed">
+              <td class="px-4 py-3 text-sm">should add product to cart</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Smoke</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">748ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="smoke" data-status="passed">
+              <td class="px-4 py-3 text-sm">should remove product from cart</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Smoke</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">689ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="smoke" data-status="passed">
+              <td class="px-4 py-3 text-sm">should navigate to cart page</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Smoke</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">653ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="smoke" data-status="passed">
+              <td class="px-4 py-3 text-sm">should sort products A to Z</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Smoke</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">666ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="smoke" data-status="passed">
+              <td class="px-4 py-3 text-sm">should sort products Z to A</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Smoke</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">673ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="smoke" data-status="passed">
+              <td class="px-4 py-3 text-sm">should sort products low to high</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Smoke</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">670ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="smoke" data-status="passed">
+              <td class="px-4 py-3 text-sm">should sort products high to low</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Smoke</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">682ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="smoke" data-status="passed">
+              <td class="px-4 py-3 text-sm">should login successfully with standard user</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Smoke</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">867ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/smoke/login.smoke.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="smoke" data-status="passed">
+              <td class="px-4 py-3 text-sm">should show error for locked out user</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Smoke</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">557ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/smoke/login.smoke.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="smoke" data-status="passed">
+              <td class="px-4 py-3 text-sm">should show error for invalid credentials</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Smoke</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">545ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/smoke/login.smoke.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="smoke" data-status="passed">
+              <td class="px-4 py-3 text-sm">should show error for empty username</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Smoke</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">356ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/smoke/login.smoke.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="smoke" data-status="passed">
+              <td class="px-4 py-3 text-sm">should show error for empty password</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Smoke</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">365ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/smoke/login.smoke.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="regression" data-status="passed">
+              <td class="px-4 py-3 text-sm">should complete full checkout with single item</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Regression</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">2252ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/regression/checkout.regression.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="regression" data-status="passed">
+              <td class="px-4 py-3 text-sm">should complete full checkout with multiple items</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Regression</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">1736ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/regression/checkout.regression.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="regression" data-status="passed">
+              <td class="px-4 py-3 text-sm">should cancel checkout at info step</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Regression</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">1005ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/regression/checkout.regression.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="regression" data-status="passed">
+              <td class="px-4 py-3 text-sm">should cancel checkout at overview step</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Regression</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">1542ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/regression/checkout.regression.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="regression" data-status="passed">
+              <td class="px-4 py-3 text-sm">should show validation errors for empty checkout fields</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Regression</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">862ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/regression/checkout.regression.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="regression" data-status="passed">
+              <td class="px-4 py-3 text-sm">should persist cart after logout and login</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Regression</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">1238ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/regression/checkout.regression.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="api" data-status="passed">
+              <td class="px-4 py-3 text-sm">should get all users</td>
+              <td class="px-4 py-3 text-sm text-slate-400">API</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">178ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="api" data-status="passed">
+              <td class="px-4 py-3 text-sm">should get single user by id</td>
+              <td class="px-4 py-3 text-sm text-slate-400">API</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">50ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="api" data-status="passed">
+              <td class="px-4 py-3 text-sm">should get all posts</td>
+              <td class="px-4 py-3 text-sm text-slate-400">API</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">56ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="api" data-status="passed">
+              <td class="px-4 py-3 text-sm">should get single post by id</td>
+              <td class="px-4 py-3 text-sm text-slate-400">API</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">42ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="api" data-status="passed">
+              <td class="px-4 py-3 text-sm">should get posts by user</td>
+              <td class="px-4 py-3 text-sm text-slate-400">API</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">48ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="api" data-status="passed">
+              <td class="px-4 py-3 text-sm">should get comments for a post</td>
+              <td class="px-4 py-3 text-sm text-slate-400">API</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">46ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="api" data-status="passed">
+              <td class="px-4 py-3 text-sm">should get all albums</td>
+              <td class="px-4 py-3 text-sm text-slate-400">API</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">44ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="api" data-status="passed">
+              <td class="px-4 py-3 text-sm">should get all photos</td>
+              <td class="px-4 py-3 text-sm text-slate-400">API</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">318ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="api" data-status="passed">
+              <td class="px-4 py-3 text-sm">should get all todos</td>
+              <td class="px-4 py-3 text-sm text-slate-400">API</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">340ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="api" data-status="passed">
+              <td class="px-4 py-3 text-sm">should create a post</td>
+              <td class="px-4 py-3 text-sm text-slate-400">API</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">52ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="api" data-status="passed">
+              <td class="px-4 py-3 text-sm">should update a post</td>
+              <td class="px-4 py-3 text-sm text-slate-400">API</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">53ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="api" data-status="passed">
+              <td class="px-4 py-3 text-sm">should delete a post</td>
+              <td class="px-4 py-3 text-sm text-slate-400">API</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">53ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="a11y" data-status="passed">
+              <td class="px-4 py-3 text-sm">should have no accessibility violations on login page</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Accessibility</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">611ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/accessibility/a11y.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="a11y" data-status="passed">
+              <td class="px-4 py-3 text-sm">should have no accessibility violations on inventory page</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Accessibility</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">677ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/accessibility/a11y.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="a11y" data-status="passed">
+              <td class="px-4 py-3 text-sm">should have no accessibility violations on login error state</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Accessibility</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">555ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/accessibility/a11y.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="visual" data-status="passed">
+              <td class="px-4 py-3 text-sm">should match login page baseline</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Visual</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">838ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/visual/visual.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="visual" data-status="passed">
+              <td class="px-4 py-3 text-sm">should match inventory page baseline</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Visual</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">606ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/visual/visual.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="visual" data-status="passed">
+              <td class="px-4 py-3 text-sm">should match cart page baseline</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Visual</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">838ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/visual/visual.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="visual" data-status="passed">
+              <td class="px-4 py-3 text-sm">should match checkout info page baseline</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Visual</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">786ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/visual/visual.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="visual" data-status="passed">
+              <td class="px-4 py-3 text-sm">should match checkout overview page baseline</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Visual</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">1359ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/visual/visual.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="visual" data-status="passed">
+              <td class="px-4 py-3 text-sm">should match checkout complete page baseline</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Visual</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">1446ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/visual/visual.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="visual" data-status="passed">
+              <td class="px-4 py-3 text-sm">should match inventory page with different sort orders</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Visual</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">1045ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/visual/visual.cy.ts</td>
+            </tr>
+            <tr class="test-row group data-suite="visual" data-status="passed">
+              <td class="px-4 py-3 text-sm">should match login page error state baseline</td>
+              <td class="px-4 py-3 text-sm text-slate-400">Visual</td>
+              <td class="px-4 py-3 text-sm"><span class="status-badge status-passed">passed</span></td>
+              <td class="px-4 py-3 text-sm text-slate-400">644ms</td>
+              <td class="px-4 py-3 text-sm text-slate-400 font-mono">cypress/e2e/visual/visual.cy.ts</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Lighthouse Metrics -->
+    <div class="mt-8 fade-in">
+      <h3 class="text-slate-300 font-semibold mb-4">🚀 Lighthouse CI — Performance (saucedemo.com)</h3>
+      <div class="glass p-6 rounded-xl">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div class="bg-slate-800/50 p-4 rounded-lg">
+            <p class="text-slate-400 text-xs font-medium">First Contentful Paint</p>
+            <p class="text-2xl font-bold text-white">0.6s</p>
+          </div>
+          <div class="bg-slate-800/50 p-4 rounded-lg">
+            <p class="text-slate-400 text-xs font-medium">Largest Contentful Paint</p>
+            <p class="text-2xl font-bold text-white">0.8s</p>
+          </div>
+          <div class="bg-slate-800/50 p-4 rounded-lg">
+            <p class="text-slate-400 text-xs font-medium">Time to Interactive</p>
+            <p class="text-2xl font-bold text-white">0.9s</p>
+          </div>
+          <div class="bg-slate-800/50 p-4 rounded-lg">
+            <p class="text-slate-400 text-xs font-medium">Cumulative Layout Shift</p>
+            <p class="text-2xl font-bold text-white">0.002</p>
+          </div>
+          <div class="bg-slate-800/50 p-4 rounded-lg">
+            <p class="text-slate-400 text-xs font-medium">Total Blocking Time</p>
+            <p class="text-2xl font-bold text-white">4ms</p>
+          </div>
+          <div class="bg-slate-800/50 p-4 rounded-lg">
+            <p class="text-slate-400 text-xs font-medium">Max Potential FID</p>
+            <p class="text-2xl font-bold text-white">60ms</p>
+          </div>
+          <div class="bg-slate-800/50 p-4 rounded-lg">
+            <p class="text-slate-400 text-xs font-medium">Speed Index</p>
+            <p class="text-2xl font-bold text-white">0.6s</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="mt-8 fade-in">
+      <p class="text-slate-500 text-sm">
+        Generado por <a href="https://github.com/dpgpqa/cypress-qa-pipeline" class="text-blue-400 hover:text-blue-300">Cypress QA Pipeline</a> • CTRF (Common Test Report Format) • GitHub Actions CI
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    // Suite chart
+    const suiteCtx = document.getElementById('suiteChart').getContext('2d');
+    new Chart(suiteCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Smoke', 'API', 'Regression', 'Visual', 'Accessibility'],
+        datasets: [{
+          data: [13, 12, 6, 8, 3],
+          backgroundColor: ['#3b82f6', '#22c55e', '#a855f7', '#f59e0b', '#64748b'],
+          borderWidth: 0,
+        }]
+      },
+      options: {
+        plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { family: 'Inter' } } } },
+        cutout: '70%',
+      }
+    });
+
+    // Status chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+      type: 'pie',
+      data: {
+        labels: ['Passed', 'Failed', 'Skipped'],
+        datasets: [{
+          data: [42, 0, 0],
+          backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'],
+          borderWidth: 0,
+        }]
+      },
+      options: {
+        plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { family: 'Inter' } } } },
+      }
+    });
+
+    function filterSuite(suite) {
+      document.querySelectorAll('.suite-tab').forEach(tab => {
+        const isActive = suite === 'all' ? tab.id === 'tab-all' : tab.dataset.suite === suite;
+        tab.className = isActive
+          ? 'suite-tab px-4 py-2 rounded-lg text-sm font-medium transition-all btn-active'
+          : 'suite-tab px-4 py-2 rounded-lg text-sm font-medium transition-all bg-slate-700/50 text-slate-400 hover:bg-slate-600';
+      });
+      document.querySelectorAll('.test-row').forEach(row => {
+        const match = suite === 'all' || row.dataset.suite === suite;
+        row.style.display = match ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>
