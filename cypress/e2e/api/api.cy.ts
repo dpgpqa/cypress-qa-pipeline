@@ -1,6 +1,11 @@
 /// <reference types="cypress" />
 import { USERS } from '../../fixtures/test-data';
 
+interface CypressResponse {
+  status: number;
+  body: any;
+}
+
 describe('API Tests - SauceDemo', () => {
   it('should login via API and get session', () => {
     cy.request({
@@ -12,7 +17,7 @@ describe('API Tests - SauceDemo', () => {
         password: USERS.standard.password,
       },
       followRedirect: false,
-    }).then((response) => {
+    }).then((response: CypressResponse) => {
       expect(response.status).to.be.oneOf([200, 302]);
     });
   });
@@ -28,7 +33,7 @@ describe('API Tests - SauceDemo', () => {
       },
       followRedirect: false,
       failOnStatusCode: false,
-    }).then((response) => {
+    }).then((response: CypressResponse) => {
       expect(response.status).to.be.oneOf([200, 302]);
     });
   });
@@ -38,22 +43,14 @@ describe('API Tests - SauceDemo', () => {
     cy.request({
       method: 'GET',
       url: '/inventory.html',
-    }).then((response) => {
+    }).then((response: CypressResponse) => {
       expect(response.status).to.eq(200);
       expect(response.body).to.include('Sauce Labs Backpack');
     });
   });
 });
 
-// Custom command for login
-declare global {
-  namespace Cypress {
-    interface Chainable {
-      login(username: string, password: string): Chainable<void>;
-    }
-  }
-}
-
+// Custom command for login is declared in cypress/support/e2e.ts
 Cypress.Commands.add('login', (username: string, password: string) => {
   cy.request({
     method: 'POST',

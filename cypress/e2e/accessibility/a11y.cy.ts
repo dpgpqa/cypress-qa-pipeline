@@ -81,7 +81,7 @@ Cypress.Commands.add('injectAxe', () => {
 });
 
 Cypress.Commands.add('checkA11y', () => {
-  cy.window().then((win) => {
+  cy.window().then((win: Window & { axe?: any }) => {
     if (win.axe) {
       win.axe.run().then((results: any) => {
         if (results.violations.length > 0) {
