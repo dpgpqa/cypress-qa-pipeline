@@ -34,9 +34,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Start test server
+      - name: Run smoke tests with server
         run: |
           node test-server/server.js &
+          SERVER_PID=$!
           for i in $(seq 1 60); do
             if curl -s http://localhost:3000/ > /dev/null 2>&1; then
               echo "Server ready on attempt $i"
@@ -45,10 +46,11 @@ jobs:
             echo "Waiting for server... ($i/60)"
             sleep 1
           done
-          # Extra wait to ensure server is fully ready
           sleep 5
-      - name: Run smoke tests
-        run: npx cypress run --spec "cypress/e2e/smoke/**/*.cy.ts" --browser chrome
+          npx cypress run --spec "cypress/e2e/smoke/**/*.cy.ts" --browser chrome
+          TEST_EXIT=$?
+          kill $SERVER_PID 2>/dev/null || true
+          exit $TEST_EXIT
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -75,9 +77,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Start test server
+      - name: Run regression tests with server
         run: |
           node test-server/server.js &
+          SERVER_PID=$!
           for i in $(seq 1 60); do
             if curl -s http://localhost:3000/ > /dev/null 2>&1; then
               echo "Server ready on attempt $i"
@@ -86,10 +89,11 @@ jobs:
             echo "Waiting for server... ($i/60)"
             sleep 1
           done
-          # Extra wait to ensure server is fully ready
           sleep 5
-      - name: Run regression tests
-        run: npx cypress run --spec "cypress/e2e/regression/**/*.cy.ts"
+          npx cypress run --spec "cypress/e2e/regression/**/*.cy.ts"
+          TEST_EXIT=$?
+          kill $SERVER_PID 2>/dev/null || true
+          exit $TEST_EXIT
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -116,9 +120,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Start test server
+      - name: Run API tests with server
         run: |
           node test-server/server.js &
+          SERVER_PID=$!
           for i in $(seq 1 60); do
             if curl -s http://localhost:3000/ > /dev/null 2>&1; then
               echo "Server ready on attempt $i"
@@ -127,10 +132,11 @@ jobs:
             echo "Waiting for server... ($i/60)"
             sleep 1
           done
-          # Extra wait to ensure server is fully ready
           sleep 5
-      - name: Run API tests
-        run: npx cypress run --spec "cypress/e2e/api/**/*.cy.ts"
+          npx cypress run --spec "cypress/e2e/api/**/*.cy.ts"
+          TEST_EXIT=$?
+          kill $SERVER_PID 2>/dev/null || true
+          exit $TEST_EXIT
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -157,9 +163,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Start test server
+      - name: Run accessibility tests with server
         run: |
           node test-server/server.js &
+          SERVER_PID=$!
           for i in $(seq 1 60); do
             if curl -s http://localhost:3000/ > /dev/null 2>&1; then
               echo "Server ready on attempt $i"
@@ -168,10 +175,11 @@ jobs:
             echo "Waiting for server... ($i/60)"
             sleep 1
           done
-          # Extra wait to ensure server is fully ready
           sleep 5
-      - name: Run accessibility tests
-        run: npx cypress run --spec "cypress/e2e/accessibility/**/*.cy.ts"
+          npx cypress run --spec "cypress/e2e/accessibility/**/*.cy.ts"
+          TEST_EXIT=$?
+          kill $SERVER_PID 2>/dev/null || true
+          exit $TEST_EXIT
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -198,9 +206,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Start test server
+      - name: Run visual tests with server
         run: |
           node test-server/server.js &
+          SERVER_PID=$!
           for i in $(seq 1 60); do
             if curl -s http://localhost:3000/ > /dev/null 2>&1; then
               echo "Server ready on attempt $i"
@@ -209,10 +218,11 @@ jobs:
             echo "Waiting for server... ($i/60)"
             sleep 1
           done
-          # Extra wait to ensure server is fully ready
           sleep 5
-      - name: Run visual tests
-        run: npx cypress run --spec "cypress/e2e/visual/**/*.cy.ts"
+          npx cypress run --spec "cypress/e2e/visual/**/*.cy.ts"
+          TEST_EXIT=$?
+          kill $SERVER_PID 2>/dev/null || true
+          exit $TEST_EXIT
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
