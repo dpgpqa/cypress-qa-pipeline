@@ -180,3 +180,84 @@ jobs:
     if: always()
     steps:
       - run: echo "Todos los jobs terminaron. Revisa artifacts para videos y screenshots."
+
+  deploy-videos:
+    name: Deploy Videos to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: [smoke-tests, regression-tests, api-tests, accessibility-tests, visual-regression-tests]
+    if: always()
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download smoke videos
+        uses: actions/download-artifact@v4
+        with:
+          name: smoke-videos
+          path: /tmp/smoke-videos
+        continue-on-error: true
+      - name: Download regression videos
+        uses: actions/download-artifact@v4
+        with:
+          name: regression-videos
+          path: /tmp/regression-videos
+        continue-on-error: true
+      - name: Download API videos
+        uses: actions/download-artifact@v4
+        with:
+          name: api-videos
+          path: /tmp/api-videos
+        continue-on-error: true
+      - name: Download accessibility videos
+        uses: actions/download-artifact@v4
+        with:
+          name: a11y-videos
+          path: /tmp/a11y-videos
+        continue-on-error: true
+      - name: Download visual videos
+        uses: actions/download-artifact@v4
+        with:
+          name: visual-videos
+          path: /tmp/visual-videos
+        continue-on-error: true
+      - name: Organize videos and generate videos.json
+        run: |
+          mkdir -p videos/smoke videos/regression videos/api videos/a11y videos/visual
+          cp /tmp/smoke-videos/*.mp4 videos/smoke/ 2>/dev/null || true
+          cp /tmp/regression-videos/*.mp4 videos/regression/ 2>/dev/null || true
+          cp /tmp/api-videos/*.mp4 videos/api/ 2>/dev/null || true
+          cp /tmp/a11y-videos/*.mp4 videos/a11y/ 2>/dev/null || true
+          cp /tmp/visual-videos/*.mp4 videos/visual/ 2>/dev/null || true
+
+          echo "{" > videos.json
+          FIRST_SUITE=true
+          for SUITE in smoke regression api a11y visual; do
+            if [ -d "videos/$SUITE" ] && [ -n "$(ls -A videos/$SUITE/*.mp4 2>/dev/null)" ]; then
+              if [ "$FIRST_SUITE" = true ]; then FIRST_SUITE=false; else echo "," >> videos.json; fi
+              echo "  \"$SUITE\": [" >> videos.json
+              FIRST_FILE=true
+              for FILE in videos/$SUITE/*.mp4; do
+                if [ -f "$FILE" ]; then
+                  if [ "$FIRST_FILE" = true ]; then FIRST_FILE=false; else echo "," >> videos.json; fi
+                  BASENAME=$(basename "$FILE")
+                  echo "    {\"name\": \"$BASENAME\", \"path\": \"/videos/$SUITE/$BASENAME\"}" >> videos.json
+                fi
+              done
+              echo "  ]" >> videos.json
+            fi
+          done
+          echo "}" >> videos.json
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add videos/ videos.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "feat: add test videos from CI run ${{ github.run_id }}"
+            git push origin gh-pages
+          fi
