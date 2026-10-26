@@ -26,12 +26,16 @@ describe('Visual/Page Verification Tests', () => {
   });
 
   it('should verify cart page elements', () => {
-    cy.visit('/cart.html');
+    inventoryPage.addProductToCart('Sauce Labs Backpack');
+    inventoryPage.goToCart();
     cy.get('.cart-container').should('exist');
+    cy.get('[data-test="inventory-item"]').should('have.length', 1);
   });
 
   it('should verify checkout info page elements', () => {
-    cy.visit('/checkout-step-one.html');
+    inventoryPage.addProductToCart('Sauce Labs Backpack');
+    inventoryPage.goToCart();
+    cartPage.clickCheckout();
     cy.get('[data-test="firstName"]').should('be.visible');
     cy.get('[data-test="lastName"]').should('be.visible');
     cy.get('[data-test="postalCode"]').should('be.visible');
@@ -39,12 +43,21 @@ describe('Visual/Page Verification Tests', () => {
   });
 
   it('should verify checkout overview page elements', () => {
-    cy.visit('/checkout-step-two.html');
+    inventoryPage.addProductToCart('Sauce Labs Backpack');
+    inventoryPage.goToCart();
+    cartPage.clickCheckout();
+    checkoutInfoPage.fillInfo('John', 'Doe', '12345');
+    checkoutInfoPage.clickContinue();
     cy.get('.summary-total-label').should('exist');
   });
 
   it('should verify checkout complete page elements', () => {
-    cy.visit('/checkout-complete.html');
+    inventoryPage.addProductToCart('Sauce Labs Backpack');
+    inventoryPage.goToCart();
+    cartPage.clickCheckout();
+    checkoutInfoPage.fillInfo('John', 'Doe', '12345');
+    checkoutInfoPage.clickContinue();
+    checkoutOverviewPage.clickFinish();
     cy.get('.complete-header').should('contain', 'Thank you for your order!');
   });
 
