@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "test": "cypress run",
-    "test:smoke": "cypress run --spec \"cypress/e2e/smoke/**/*.cy.ts\" --browser chrome",
-    "test:regression": "cypress run --spec \"cypress/e2e/regression/**/*.cy.ts\"",
-    "test:api": "cypress run --spec \"cypress/e2e/api/**/*.cy.ts\"",
-    "test:a11y": "cypress run --spec \"cypress/e2e/accessibility/**/*.cy.ts\"",
-    "test:visual": "cypress run --spec \"cypress/e2e/visual/**/*.cy.ts\"",
+    "test:smoke": "bash test-server/run-tests.sh smoke",
+    "test:regression": "bash test-server/run-tests.sh regression",
+    "test:api": "bash test-server/run-tests.sh api",
+    "test:a11y": "bash test-server/run-tests.sh a11y",
+    "test:visual": "bash test-server/run-tests.sh visual",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.js"
   },
