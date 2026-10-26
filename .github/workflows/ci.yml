@@ -37,13 +37,16 @@ jobs:
       - name: Start test server
         run: |
           node test-server/server.js &
-          for i in $(seq 1 30); do
+          for i in $(seq 1 60); do
             if curl -s http://localhost:3000/ > /dev/null 2>&1; then
-              echo "Server ready"
+              echo "Server ready on attempt $i"
               break
             fi
+            echo "Waiting for server... ($i/60)"
             sleep 1
           done
+          # Extra wait to ensure server is fully ready
+          sleep 5
       - name: Run smoke tests
         run: npx cypress run --spec "cypress/e2e/smoke/**/*.cy.ts" --browser chrome
       - name: Upload videos (always)
@@ -75,13 +78,16 @@ jobs:
       - name: Start test server
         run: |
           node test-server/server.js &
-          for i in $(seq 1 30); do
+          for i in $(seq 1 60); do
             if curl -s http://localhost:3000/ > /dev/null 2>&1; then
-              echo "Server ready"
+              echo "Server ready on attempt $i"
               break
             fi
+            echo "Waiting for server... ($i/60)"
             sleep 1
           done
+          # Extra wait to ensure server is fully ready
+          sleep 5
       - name: Run regression tests
         run: npx cypress run --spec "cypress/e2e/regression/**/*.cy.ts"
       - name: Upload videos (always)
@@ -113,13 +119,16 @@ jobs:
       - name: Start test server
         run: |
           node test-server/server.js &
-          for i in $(seq 1 30); do
+          for i in $(seq 1 60); do
             if curl -s http://localhost:3000/ > /dev/null 2>&1; then
-              echo "Server ready"
+              echo "Server ready on attempt $i"
               break
             fi
+            echo "Waiting for server... ($i/60)"
             sleep 1
           done
+          # Extra wait to ensure server is fully ready
+          sleep 5
       - name: Run API tests
         run: npx cypress run --spec "cypress/e2e/api/**/*.cy.ts"
       - name: Upload videos (always)
@@ -151,13 +160,16 @@ jobs:
       - name: Start test server
         run: |
           node test-server/server.js &
-          for i in $(seq 1 30); do
+          for i in $(seq 1 60); do
             if curl -s http://localhost:3000/ > /dev/null 2>&1; then
-              echo "Server ready"
+              echo "Server ready on attempt $i"
               break
             fi
+            echo "Waiting for server... ($i/60)"
             sleep 1
           done
+          # Extra wait to ensure server is fully ready
+          sleep 5
       - name: Run accessibility tests
         run: npx cypress run --spec "cypress/e2e/accessibility/**/*.cy.ts"
       - name: Upload videos (always)
@@ -189,13 +201,16 @@ jobs:
       - name: Start test server
         run: |
           node test-server/server.js &
-          for i in $(seq 1 30); do
+          for i in $(seq 1 60); do
             if curl -s http://localhost:3000/ > /dev/null 2>&1; then
-              echo "Server ready"
+              echo "Server ready on attempt $i"
               break
             fi
+            echo "Waiting for server... ($i/60)"
             sleep 1
           done
+          # Extra wait to ensure server is fully ready
+          sleep 5
       - name: Run visual tests
         run: npx cypress run --spec "cypress/e2e/visual/**/*.cy.ts"
       - name: Upload videos (always)

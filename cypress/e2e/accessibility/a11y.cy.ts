@@ -17,6 +17,6 @@ describe('Accessibility - SauceDemo Pages', () => {
 
   it('should have no accessibility violations on cart page', () => {
     cy.visit('/cart.html');
-    cy.get('.cart_container').should('exist');
+    cy.get('.cart-container').should('exist');
   });
 });

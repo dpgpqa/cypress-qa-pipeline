@@ -15,7 +15,7 @@ describe('Visual - SauceDemo Pages', () => {
 
   it('should match cart page baseline', () => {
     cy.visit('/cart.html');
-    cy.get('.cart_container').should('exist');
+    cy.get('.cart-container').should('exist');
     cy.screenshot('cart-page');
   });
 
@@ -27,7 +27,7 @@ describe('Visual - SauceDemo Pages', () => {
 
   it('should match checkout overview page baseline', () => {
     cy.visit('/checkout-step-two.html');
-    cy.get('.summary_total_label').should('exist');
+    cy.get('.summary-total-label').should('exist');
     cy.screenshot('checkout-overview-page');
   });
 
