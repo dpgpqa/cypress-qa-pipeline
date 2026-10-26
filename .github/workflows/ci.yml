@@ -243,7 +243,7 @@ jobs:
                 if [ -f "$FILE" ]; then
                   if [ "$FIRST_FILE" = true ]; then FIRST_FILE=false; else echo "," >> videos.json; fi
                   BASENAME=$(basename "$FILE")
-                  echo "    {\"name\": \"$BASENAME\", \"path\": \"/videos/$SUITE/$BASENAME\"}" >> videos.json
+                  echo "    {\"name\": \"$BASENAME\", \"path\": \"videos/$SUITE/$BASENAME\"}" >> videos.json
                 fi
               done
               echo "  ]" >> videos.json
