@@ -1,39 +1,88 @@
 /// <reference types="cypress" />
+import { loginPage } from '../../pages/LoginPage';
+import { inventoryPage } from '../../pages/InventoryPage';
+import { cartPage } from '../../pages/CartPage';
+import { checkoutInfoPage } from '../../pages/CheckoutInfoPage';
+import { checkoutOverviewPage } from '../../pages/CheckoutOverviewPage';
+import { checkoutCompletePage } from '../../pages/CheckoutCompletePage';
+import { USERS } from '../../fixtures/test-data';
 
-describe('Visual - SauceDemo Pages', () => {
-  it('should load login page', () => {
+describe('Visual Regression Tests', () => {
+  beforeEach(() => {
+    cy.login(USERS.standard.username, USERS.standard.password);
+  });
+
+  it('should match login page baseline', () => {
     cy.visit('/');
-    cy.get('[data-test="login-button"]').should('be.visible');
+    cy.matchImageSnapshot('login-page');
   });
 
-  it('should load inventory page', () => {
-    cy.visit('/inventory.html');
-    cy.get('[data-test="inventory-item"]').should('have.length', 6);
+  it('should match inventory page baseline', () => {
+    inventoryPage.shouldBeOnInventory();
+    cy.matchImageSnapshot('inventory-page');
   });
 
-  it('should load cart page', () => {
+  it('should match cart page baseline', () => {
     cy.visit('/cart.html');
-    cy.get('.cart-container').should('exist');
+    cartPage.shouldBeOnCart();
+    cy.matchImageSnapshot('cart-page');
   });
 
-  it('should load checkout info page', () => {
+  it('should match checkout info page baseline', () => {
     cy.visit('/checkout-step-one.html');
-    cy.get('[data-test="firstName"]').should('be.visible');
+    checkoutInfoPage.shouldBeOnCheckoutInfo();
+    cy.matchImageSnapshot('checkout-info-page');
   });
 
-  it('should load checkout overview page', () => {
+  it('should match checkout overview page baseline', () => {
     cy.visit('/checkout-step-two.html');
-    cy.get('.summary-total-label').should('exist');
+    checkoutOverviewPage.shouldBeOnCheckoutOverview();
+    cy.matchImageSnapshot('checkout-overview-page');
   });
 
-  it('should load checkout complete page', () => {
+  it('should match checkout complete page baseline', () => {
     cy.visit('/checkout-complete.html');
-    cy.get('.complete-header').should('exist');
+    checkoutCompletePage.shouldBeOnCheckoutComplete();
+    cy.matchImageSnapshot('checkout-complete-page');
   });
 
-  it('should show login page error state', () => {
+  it('should match inventory page with different sort orders', () => {
+    inventoryPage.shouldBeOnInventory();
+    cy.matchImageSnapshot('inventory-page-az');
+
+    inventoryPage.sortBy('za');
+    cy.matchImageSnapshot('inventory-page-za');
+
+    inventoryPage.sortBy('lohi');
+    cy.matchImageSnapshot('inventory-page-lohi');
+
+    inventoryPage.sortBy('hilo');
+    cy.matchImageSnapshot('inventory-page-hilo');
+  });
+
+  it('should match login page error state baseline', () => {
     cy.visit('/');
+    loginPage.clickLogin();
+    loginPage.shouldShowError('Epic sadface: Username and password do not match any user in this service');
+    cy.matchImageSnapshot('login-error-state');
+  });
+});
+
+// Custom command for login
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      login(username: string, password: string): Chainable<void>;
+    }
+  }
+}
+
+Cypress.Commands.add('login', (username: string, password: string) => {
+  cy.session([username, password], () => {
+    cy.visit('/');
+    cy.get('[data-test="username"]').type(username);
+    cy.get('[data-test="password"]').type(password);
     cy.get('[data-test="login-button"]').click();
-    cy.get('[data-test="error"]').should('be.visible');
+    cy.url().should('include', '/inventory.html');
   });
 });

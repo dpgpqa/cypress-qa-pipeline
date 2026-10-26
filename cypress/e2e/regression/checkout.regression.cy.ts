@@ -1,41 +1,150 @@
 /// <reference types="cypress" />
+import { loginPage } from '../../pages/LoginPage';
+import { inventoryPage } from '../../pages/InventoryPage';
+import { cartPage } from '../../pages/CartPage';
+import { checkoutInfoPage } from '../../pages/CheckoutInfoPage';
+import { checkoutOverviewPage } from '../../pages/CheckoutOverviewPage';
+import { checkoutCompletePage } from '../../pages/CheckoutCompletePage';
+import { USERS, PRODUCTS, CHECKOUT_INFO } from '../../fixtures/test-data';
 
-describe('Regression - Checkout Flow', () => {
+describe('Regression Tests - Checkout Flow', () => {
   beforeEach(() => {
-    cy.visit('/');
-    cy.get('[data-test="username"]').type('standard_user');
-    cy.get('[data-test="password"]').type('secret_sauce');
-    cy.get('[data-test="login-button"]').click();
-    cy.url().should('include', '/inventory.html');
+    loginPage.visit().login(USERS.standard.username, USERS.standard.password);
+    inventoryPage.shouldBeOnInventory();
   });
 
-  it('should have checkout button on cart page', () => {
-    cy.visit('/cart.html');
-    cy.get('[data-test="checkout"]').should('be.visible');
+  it('should complete full checkout with single item', () => {
+    inventoryPage.addProductToCart(PRODUCTS[0].name);
+    inventoryPage.getCartBadge().should('contain', '1');
+
+    inventoryPage.goToCart();
+    cartPage.shouldBeOnCart();
+
+    cartPage.clickCheckout();
+    checkoutInfoPage.shouldBeOnCheckoutInfo();
+
+    checkoutInfoPage.fillInfo(
+      CHECKOUT_INFO.valid.firstName,
+      CHECKOUT_INFO.valid.lastName,
+      CHECKOUT_INFO.valid.postalCode
+    );
+    checkoutInfoPage.clickContinue();
+
+    checkoutOverviewPage.shouldBeOnCheckoutOverview();
+    checkoutOverviewPage.getItems().should('have.length', 1);
+    checkoutOverviewPage.getSubtotal().should('contain', PRODUCTS[0].price);
+
+    checkoutOverviewPage.clickFinish();
+
+    cy.url().should('include', '/checkout-complete.html');
+    checkoutCompletePage.shouldShowSuccessMessage();
   });
 
-  it('should have continue button on checkout info page', () => {
-    cy.visit('/checkout-step-one.html');
-    cy.get('[data-test="continue"]').should('be.visible');
+  it('should complete full checkout with multiple items', () => {
+    inventoryPage.addProductToCart(PRODUCTS[0].name);
+    inventoryPage.addProductToCart(PRODUCTS[1].name);
+    inventoryPage.getCartBadge().should('contain', '2');
+
+    inventoryPage.goToCart();
+    cartPage.getItemCount().should('eq', 2);
+
+    cartPage.clickCheckout();
+    checkoutInfoPage.fillInfo(
+      CHECKOUT_INFO.valid.firstName,
+      CHECKOUT_INFO.valid.lastName,
+      CHECKOUT_INFO.valid.postalCode
+    );
+    checkoutInfoPage.clickContinue();
+
+    checkoutOverviewPage.getItems().should('have.length', 2);
+
+    checkoutOverviewPage.clickFinish();
+    checkoutCompletePage.shouldShowSuccessMessage();
   });
 
-  it('should have finish button on checkout overview page', () => {
-    cy.visit('/checkout-step-two.html');
-    cy.get('[data-test="finish"]').should('be.visible');
+  it('should show validation error for empty first name', () => {
+    inventoryPage.addProductToCart(PRODUCTS[0].name);
+    inventoryPage.goToCart();
+    cartPage.clickCheckout();
+
+    checkoutInfoPage.fillInfo(
+      CHECKOUT_INFO.emptyFirstName.firstName,
+      CHECKOUT_INFO.emptyFirstName.lastName,
+      CHECKOUT_INFO.emptyFirstName.postalCode
+    );
+    checkoutInfoPage.clickContinue();
+
+    checkoutInfoPage.shouldShowError('Error: First Name is required');
   });
 
-  it('should have cancel button on checkout info page', () => {
-    cy.visit('/checkout-step-one.html');
-    cy.get('[data-test="cancel"]').should('be.visible');
+  it('should show validation error for empty last name', () => {
+    inventoryPage.addProductToCart(PRODUCTS[0].name);
+    inventoryPage.goToCart();
+    cartPage.clickCheckout();
+
+    checkoutInfoPage.fillInfo(
+      CHECKOUT_INFO.emptyLastName.firstName,
+      CHECKOUT_INFO.emptyLastName.lastName,
+      CHECKOUT_INFO.emptyLastName.postalCode
+    );
+    checkoutInfoPage.clickContinue();
+
+    checkoutInfoPage.shouldShowError('Error: Last Name is required');
   });
 
-  it('should have cancel button on checkout overview page', () => {
-    cy.visit('/checkout-step-two.html');
-    cy.get('[data-test="cancel"]').should('be.visible');
+  it('should show validation error for empty postal code', () => {
+    inventoryPage.addProductToCart(PRODUCTS[0].name);
+    inventoryPage.goToCart();
+    cartPage.clickCheckout();
+
+    checkoutInfoPage.fillInfo(
+      CHECKOUT_INFO.emptyPostalCode.firstName,
+      CHECKOUT_INFO.emptyPostalCode.lastName,
+      CHECKOUT_INFO.emptyPostalCode.postalCode
+    );
+    checkoutInfoPage.clickContinue();
+
+    checkoutInfoPage.shouldShowError('Error: Postal Code is required');
   });
 
-  it('should have back home button on complete page', () => {
-    cy.visit('/checkout-complete.html');
-    cy.get('[data-test="back-to-home"]').should('be.visible');
+  it('should cancel checkout at info step and return to cart', () => {
+    inventoryPage.addProductToCart(PRODUCTS[0].name);
+    inventoryPage.goToCart();
+    cartPage.clickCheckout();
+
+    checkoutInfoPage.clickCancel();
+    cartPage.shouldBeOnCart();
+  });
+
+  it('should cancel checkout at overview step and return to cart', () => {
+    inventoryPage.addProductToCart(PRODUCTS[0].name);
+    inventoryPage.goToCart();
+    cartPage.clickCheckout();
+
+    checkoutInfoPage.fillInfo(
+      CHECKOUT_INFO.valid.firstName,
+      CHECKOUT_INFO.valid.lastName,
+      CHECKOUT_INFO.valid.postalCode
+    );
+    checkoutInfoPage.clickContinue();
+
+    checkoutOverviewPage.clickCancel();
+    cartPage.shouldBeOnCart();
+  });
+
+  it('should continue shopping from cart and return to inventory', () => {
+    inventoryPage.addProductToCart(PRODUCTS[0].name);
+    inventoryPage.goToCart();
+    cartPage.clickContinueShopping();
+    inventoryPage.shouldBeOnInventory();
+  });
+
+  it('should remove item from cart', () => {
+    inventoryPage.addProductToCart(PRODUCTS[0].name);
+    inventoryPage.getCartBadge().should('contain', '1');
+
+    inventoryPage.goToCart();
+    cartPage.removeProduct(PRODUCTS[0].name);
+    cartPage.getItemCount().should('eq', 0);
   });
 });
