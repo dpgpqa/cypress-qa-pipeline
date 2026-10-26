@@ -2,7 +2,7 @@ import { defineConfig } from 'cypress';
 
 export default defineConfig({
   e2e: {
-    baseUrl: 'https://www.saucedemo.com',
+    baseUrl: 'http://localhost:3000',
     specPattern: 'cypress/e2e/**/*.cy.{ts,tsx,js}',
     supportFile: 'cypress/support/e2e.ts',
     video: true,
@@ -18,5 +18,10 @@ export default defineConfig({
       runMode: 2,
       openMode: 0,
     },
+  },
+  webServer: {
+    command: 'node test-server/server.js',
+    port: 3000,
+    timeout: 60000,
   },
 });
