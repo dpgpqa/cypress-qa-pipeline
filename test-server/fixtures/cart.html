@@ -3,19 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SauceDemo - Cart</title>
+  <title>Swag Labs</title>
 </head>
 <body>
-  <div class="cart_container">
-    <div class="cart_list">
-      <div class="cart_item" data-test="inventory-item">
-        <div class="inventory_item_name">Sauce Labs Backpack</div>
-        <button class="btn_action" data-test="remove-sauce-labs-backpack">Remove</button>
+  <div id="page-wrapper">
+    <nav class="navbar">
+      <div class="navbar-brand">Swag Labs</div>
+      <a class="shopping-cart-link" data-test="shopping-cart-link" href="/cart.html">
+        <svg class="cart-icon" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+        <span class="shopping-cart-badge" data-test="shopping-cart-badge">0</span>
+      </a>
+      <button class="menu-button" id="react-burger-menu-btn">☰</button>
+    </nav>
+    <div class="cart-container">
+      <div class="cart-list">
+        <div class="cart-item" data-test="inventory-item">
+          <div class="cart-item-info">
+            <div class="inventory-item-name">Sauce Labs Backpack</div>
+            <div class="inventory-item-desc">carry.allTheThings() with the sleek, streamlined Sly Pack that melds uncompromising style with unequaled laptop and tablet protection.</div>
+            <div class="inventory-item-price">$29.99</div>
+          </div>
+          <button class="btn-secondary" data-test="remove-sauce-labs-backpack">REMOVE</button>
+        </div>
       </div>
-    </div>
-    <div class="checkout_buttons">
-      <button class="checkout_button" data-test="checkout">Checkout</button>
-      <button class="continue_shopping_button" data-test="continue-shopping">Continue Shopping</button>
+      <div class="cart-footer">
+        <button class="btn-secondary" data-test="continue-shopping">CONTINUE SHOPPING</button>
+        <button class="btn-primary" data-test="checkout">CHECKOUT</button>
+      </div>
     </div>
   </div>
 </body>

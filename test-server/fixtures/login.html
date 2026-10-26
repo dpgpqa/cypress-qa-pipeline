@@ -3,18 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SauceDemo - Login</title>
+  <title>Swag Labs</title>
 </head>
 <body>
-  <div id="login_container">
-    <div id="login_credential_box">
-      <div class="login_box">
-        <form id="login_button_container" action="/login" method="POST">
-          <input id="user-name" data-test="username" placeholder="Username" />
-          <input id="password" data-test="password" type="password" placeholder="Password" />
-          <input class="submit-button btn_action" data-test="login-button" type="submit" value="Login" />
-          <h3 data-test="error">Epic sadface: Username and password do not match any user in this service</h3>
-        </form>
+  <div class="login-container">
+    <div class="login-box">
+      <h1 class="login-title">Swag Labs</h1>
+      <form id="login-form" action="/login" method="POST">
+        <div class="form-group">
+          <input id="user-name" data-test="username" placeholder="Username" name="user-name" type="text" />
+        </div>
+        <div class="form-group">
+          <input id="password" data-test="password" placeholder="Password" name="password" type="password" />
+        </div>
+        <input class="btn-primary" data-test="login-button" type="submit" value="LOGIN" />
+        <h3 data-test="error" class="error-message">Epic sadface: Username and password do not match any user in this service</h3>
+      </form>
+      <div class="credentials">
+        <h4>Accepted usernames:</h4>
+        <ul>
+          <li>standard_user</li>
+          <li>locked_out_user</li>
+          <li>problem_user</li>
+          <li>performance_glitch_user</li>
+        </ul>
+        <h4>Password for all users:</h4>
+        <p>secret_sauce</p>
       </div>
     </div>
   </div>

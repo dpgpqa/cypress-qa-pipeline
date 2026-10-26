@@ -3,20 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SauceDemo - Checkout Info</title>
+  <title>Swag Labs</title>
 </head>
 <body>
-  <div class="checkout_container">
-    <form id="checkout_info_container">
-      <input data-test="firstName" placeholder="First Name" />
-      <input data-test="lastName" placeholder="Last Name" />
-      <input data-test="postalCode" placeholder="Zip/Postal Code" />
-      <input class="submit-button btn_action" data-test="continue" type="submit" value="Continue" />
-      <div class="checkout_error_container">
-        <h3 data-test="error">Error: First Name is required</h3>
-      </div>
-    </form>
-    <button class="cart_cancel_link btn_secondary" data-test="cancel">Cancel</button>
+  <div id="page-wrapper">
+    <nav class="navbar">
+      <div class="navbar-brand">Swag Labs</div>
+      <a class="shopping-cart-link" data-test="shopping-cart-link" href="/cart.html">
+        <svg class="cart-icon" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+        <span class="shopping-cart-badge" data-test="shopping-cart-badge">1</span>
+      </a>
+      <button class="menu-button" id="react-burger-menu-btn">☰</button>
+    </nav>
+    <div class="checkout-container">
+      <form class="checkout-form" id="checkout-form" action="/checkout-step-two.html" method="POST">
+        <h2>Checkout: Your Information</h2>
+        <div class="form-group">
+          <label for="first-name">First Name</label>
+          <input id="first-name" data-test="firstName" placeholder="First Name" name="firstName" type="text" required />
+        </div>
+        <div class="form-group">
+          <label for="last-name">Last Name</label>
+          <input id="last-name" data-test="lastName" placeholder="Last Name" name="lastName" type="text" required />
+        </div>
+        <div class="form-group">
+          <label for="postal-code">Zip/Postal Code</label>
+          <input id="postal-code" data-test="postalCode" placeholder="Zip/Postal Code" name="postalCode" type="text" required />
+        </div>
+        <div class="error-message" data-test="error">Error: First Name is required</div>
+        <button class="btn-primary" data-test="continue" type="submit">CONTINUE</button>
+      </form>
+      <button class="btn-secondary" data-test="cancel">CANCEL</button>
+    </div>
   </div>
 </body>
 </html>
