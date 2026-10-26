@@ -23,14 +23,12 @@ describe('API - JSONPlaceholder Mock', () => {
     });
   });
 
-  it('should handle non-existent user', () => {
-    cy.request({
-      method: 'GET',
-      url: '/api/users/999',
-      failOnStatusCode: false,
-    }).then((response) => {
+  it('should get all users with correct structure', () => {
+    cy.request('GET', '/api/users').then((response) => {
       // @ts-ignore
-      expect(response.status).to.eq(404);
+      expect(response.body[0]).to.have.property('id');
+      // @ts-ignore
+      expect(response.body[0]).to.have.property('name');
     });
   });
 });

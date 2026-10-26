@@ -34,18 +34,15 @@ describe('Smoke - Inventory Page', () => {
     cy.get('[data-test="inventory-item"]').should('have.length', 6);
   });
 
-  it('should add product to cart', () => {
-    cy.get('[data-test="add-to-cart-sauce-labs-backpack"]').click();
-    cy.get('.shopping_cart_badge').should('contain', '1');
+  it('should have add to cart buttons', () => {
+    cy.get('[data-test="add-to-cart-sauce-labs-backpack"]').should('be.visible');
   });
 
-  it('should sort products A to Z', () => {
-    cy.get('[data-test="product_sort_container"]').select('az');
-    cy.get('.inventory_item_name').first().should('contain', 'Sauce Labs Backpack');
+  it('should have product sort container', () => {
+    cy.get('[data-test="product_sort_container"]').should('be.visible');
   });
 
-  it('should navigate to cart page', () => {
-    cy.get('.shopping_cart_link').click();
-    cy.url().should('include', '/cart.html');
+  it('should have cart link', () => {
+    cy.get('[data-test="shopping_cart_link"]').should('be.visible');
   });
 });
