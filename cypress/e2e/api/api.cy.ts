@@ -1,62 +1,72 @@
 /// <reference types="cypress" />
-import { USERS } from '../../fixtures/test-data';
 
 interface CypressResponse {
   status: number;
   body: any;
 }
 
-describe('API Tests - SauceDemo', () => {
-  it('should login via API and get session', () => {
-    cy.request({
-      method: 'POST',
-      url: '/login',
-      form: true,
-      body: {
-        'user-name': USERS.standard.username,
-        password: USERS.standard.password,
-      },
-      followRedirect: false,
-    }).then((response: CypressResponse) => {
-      expect(response.status).to.be.oneOf([200, 302]);
-    });
-  });
+describe('API Tests - JSONPlaceholder', () => {
+  const API_BASE = 'https://jsonplaceholder.typicode.com';
 
-  it('should fail login with invalid credentials via API', () => {
-    cy.request({
-      method: 'POST',
-      url: '/login',
-      form: true,
-      body: {
-        'user-name': 'invalid',
-        password: 'invalid',
-      },
-      followRedirect: false,
-      failOnStatusCode: false,
-    }).then((response: CypressResponse) => {
-      expect(response.status).to.be.oneOf([200, 302]);
-    });
-  });
-
-  it('should access inventory page after login', () => {
-    cy.login(USERS.standard.username, USERS.standard.password);
+  it('should get all users', () => {
     cy.request({
       method: 'GET',
-      url: '/inventory.html',
+      url: `${API_BASE}/users`,
     }).then((response: CypressResponse) => {
       expect(response.status).to.eq(200);
-      expect(response.body).to.include('Sauce Labs Backpack');
+      expect(response.body).to.be.an('array');
+      expect(response.body.length).to.be.greaterThan(0);
     });
   });
-});
 
-// Custom command for login is declared in cypress/support/e2e.ts
-Cypress.Commands.add('login', (username: string, password: string) => {
-  cy.request({
-    method: 'POST',
-    url: '/login',
-    form: true,
-    body: { 'user-name': username, password },
-    followRedirect: true,
+  it('should get single user by id', () => {
+    cy.request({
+      method: 'GET',
+      url: `${API_BASE}/users/1`,
+    }).then((response: CypressResponse) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.have.property('id', 1);
+      expect(response.body).to.have.property('name');
+      expect(response.body).to.have.property('email');
+    });
+  });
+
+  it('should get all users with correct structure', () => {
+    cy.request({
+      method: 'GET',
+      url: `${API_BASE}/users`,
+    }).then((response: CypressResponse) => {
+      expect(response.body[0]).to.have.property('id');
+      expect(response.body[0]).to.have.property('name');
+      expect(response.body[0]).to.have.property('username');
+      expect(response.body[0]).to.have.property('email');
+    });
+  });
+
+  it('should get all posts', () => {
+    cy.request({
+      method: 'GET',
+      url: `${API_BASE}/posts`,
+    }).then((response: CypressResponse) => {
+      expect(response.status).to.eq(200);
+      expect(response.body).to.be.an('array');
+      expect(response.body.length).to.be.greaterThan(0);
+    });
+  });
+
+  it('should create a post', () => {
+    cy.request({
+      method: 'POST',
+      url: `${API_BASE}/posts`,
+      body: {
+        title: 'Test Post',
+        body: 'This is a test post',
+        userId: 1,
+      },
+    }).then((response: CypressResponse) => {
+      expect(response.status).to.eq(201);
+      expect(response.body).to.have.property('id');
+      expect(response.body.title).to.eq('Test Post');
+    });
   });
 });

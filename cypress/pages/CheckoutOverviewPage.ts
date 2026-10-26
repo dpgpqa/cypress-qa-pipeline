@@ -2,14 +2,14 @@
 
 export class CheckoutOverviewPage {
   readonly url = '/checkout-step-two.html';
-  readonly cartItems = '[data-test="inventory-item"]';
-  readonly itemNames = '.inventory_item_name';
-  readonly itemPrices = '.inventory_item_price';
-  readonly subtotalLabel = '[data-test="subtotal-label"]';
-  readonly taxLabel = '[data-test="tax-label"]';
-  readonly totalLabel = '[data-test="total-label"]';
-  readonly finishButton = '[data-test="finish"]';
-  readonly cancelButton = '[data-test="cancel"]';
+  readonly cartItems = '[data-test="inventory-item"], .cart_item, .inventory_item';
+  readonly itemNames = '.inventory_item_name, .cart_item_name';
+  readonly itemPrices = '.inventory_item_price, .cart_item_price';
+  readonly subtotalLabel = '[data-test="subtotal-label"], .summary_subtotal_label, .summary_subtotal';
+  readonly taxLabel = '[data-test="tax-label"], .summary_tax_label, .summary_tax';
+  readonly totalLabel = '[data-test="total-label"], .summary_total_label, .summary_total';
+  readonly finishButton = '[data-test="finish"], #finish, button[data-test="finish"]';
+  readonly cancelButton = '[data-test="cancel"], #cancel, a[data-test="cancel"]';
 
   shouldBeOnCheckoutOverview() {
     cy.url().should('include', '/checkout-step-two.html');
@@ -37,14 +37,19 @@ export class CheckoutOverviewPage {
   }
 
   clickFinish() {
-    cy.get(this.finishButton).click();
+    cy.get(this.finishButton).should('be.visible').click();
+    cy.url().should('include', '/checkout-complete.html');
     return this;
   }
 
-  clickCancel() {
-    cy.get(this.cancelButton).click();
-    return this;
+  finish() {
+    return this.clickFinish();
   }
+
+  clickCancel() {
+      cy.get(this.cancelButton).should('be.visible').click();
+      return this;
+    }
 }
 
 export const checkoutOverviewPage = new CheckoutOverviewPage();

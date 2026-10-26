@@ -16,7 +16,7 @@ describe('Smoke Tests - Login', () => {
 
   it('should show error for empty credentials', () => {
     loginPage.clickLogin();
-    loginPage.shouldShowError('Epic sadface: Username and password do not match any user in this service');
+    loginPage.shouldShowError('Epic sadface: Username is required');
   });
 
   it('should show error for locked out user', () => {
@@ -47,7 +47,7 @@ describe('Smoke Tests - Login', () => {
 
 describe('Smoke Tests - Inventory', () => {
   beforeEach(() => {
-    loginPage.visit().login(USERS.standard.username, USERS.standard.password);
+    loginPage.visit().loginAndWait(USERS.standard.username, USERS.standard.password);
     inventoryPage.shouldBeOnInventory();
   });
 
@@ -60,6 +60,7 @@ describe('Smoke Tests - Inventory', () => {
   });
 
   it('should sort products A to Z', () => {
+    cy.wait(1000);
     inventoryPage.sortBy('az');
     inventoryPage.getProductNames().first().should('contain', 'Sauce Labs Backpack');
   });

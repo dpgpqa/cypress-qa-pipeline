@@ -1,109 +1,37 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quality Observability — Cypress QA Pipeline</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
-    }
-    .mono {
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .glass {
-      background: rgba(30, 41, 59, 0.6);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    }
-    .glass-card {
-      background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      transition: all 0.3s ease;
-    }
-    .glass-card:hover {
-      border-color: rgba(59, 130, 246, 0.4);
-      box-shadow: 0 12px 40px -5px rgba(59, 130, 246, 0.15);
-      transform: translateY(-2px);
-    }
-    .stat-number {
-      font-variant-numeric: tabular-nums;
-    }
-    .gradient-text {
-      background: linear-gradient(to right, #22d3ee, #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
+    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .glass { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
+    .glass-card { background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; transition: all 0.3s ease; }
+    .glass-card:hover { border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 12px 40px -5px rgba(59, 130, 246, 0.15); transform: translateY(-2px); }
+    .stat-number { font-variant-numeric: tabular-nums; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
     .badge-passed { background: rgba(34, 197, 94, 0.15); color: #86efac; border: 1px solid rgba(34, 197, 94, 0.3); }
     .badge-failed { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
     .badge-skipped { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 6px;
-    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
     .dot-passed { background: #22d3ee; box-shadow: 0 0 12px #22d3ee; }
     .dot-failed { background: #ef4444; box-shadow: 0 0 12px #ef4444; }
     .dot-skipped { background: #f59e0b; box-shadow: 0 0 12px #f59e0b; }
-    .table-header-bg {
-      background: linear-gradient(to bottom, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-    }
-    .fade-in {
-      animation: fadeIn 0.5s ease-out forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .stagger-1 { animation-delay: 0.1s; }
-    .stagger-2 { animation-delay: 0.2s; }
-    .stagger-3 { animation-delay: 0.3s; }
-    .stagger-4 { animation-delay: 0.4s; }
-    .stagger-5 { animation-delay: 0.5s; }
-    .chart-container {
-      position: relative;
-      height: 260px;
-      width: 100%;
-    }
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0f172a;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 3px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #475569;
-    }
+    .chart-container { position: relative; height: 260px; width: 100%; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    .healer-card { background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 12px; }
+    .healer-card:hover { border-color: rgba(251, 191, 36, 0.6); box-shadow: 0 8px 32px -4px rgba(251, 191, 36, 0.15); }
   </style>
 </head>
 <body class="min-h-screen antialiased selection:bg-blue-500 selection:text-white">
-  <!-- Background gradient -->
   <div class="fixed inset-0 -z-10 bg-[#0f172a]">
     <div class="absolute top-[-10%] left-[-10%] w-[30%] h-[30%] rounded-full bg-blue-600/10 blur-[120px]"></div>
     <div class="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] rounded-full bg-purple-600/10 blur-[120px]"></div>
@@ -111,8 +39,7 @@
   </div>
 
   <div class="max-w-7xl mx-auto p-4 md:p-6">
-    <!-- Header -->
-    <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 fade-in stagger-1">
+    <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
         <div class="flex items-center gap-3 mb-2">
           <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
@@ -120,21 +47,12 @@
           </div>
           <h1 class="text-2xl font-bold text-white tracking-tight">Quality Observability</h1>
         </div>
-        <p class="text-slate-400 text-sm">
-          Dashboard de calidad — <span class="mono text-xs font-bold text-white">CI 40162133742</span> • Cypress 16 • CTRF
-        </p>
+        <p class="text-slate-400 text-sm">Dashboard de calidad — <span class="mono text-xs font-bold text-white">CI</span> • Cypress 13 • CTRF + Self-Healing</p>
       </div>
       <div class="flex gap-2">
-        <span class="px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs font-medium">
-          <span class="w-2 h-2 rounded-full bg-green-400 inline-block mr-1.5"></span>
-          Todo Verde
-        </span>
-        <span class="px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs font-medium">
-          Cypress 16
-        </span>
-        <span class="px-3 py-1.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-medium">
-          CTRF JSON
-        </span>
+        <span class="px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs font-medium"><span class="w-2 h-2 rounded-full bg-green-400 inline-block mr-1.5"></span>Cypress 13</span>
+        <span class="px-3 py-1.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-medium">CTRF JSON</span>
+        <span class="px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-medium">Self-Healing</span>
       </div>
     </header>
 
@@ -143,607 +61,71 @@
       <div class="glass-card p-5 rounded-2xl fade-in stagger-1">
         <div class="flex items-end justify-between mb-2">
           <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Tests</p>
-          <div class="flex items-baseline gap-1">
-            <span class="stat-number text-3xl font-bold text-white">42</span>
-            <span class="text-sm text-slate-500 font-medium">tests</span>
-          </div>
+          <div class="flex items-baseline gap-1"><span class="stat-number text-3xl font-bold text-white">0</span><span class="text-sm text-slate-500 font-medium">tests</span></div>
         </div>
         <div class="h-0.5 w-full bg-gradient-to-r from-transparent via-blue-500/40 to-transparent mt-3"></div>
       </div>
       <div class="glass-card p-5 rounded-2xl fade-in stagger-2">
         <div class="flex items-end justify-between mb-2">
           <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Pass Rate</p>
-          <div class="flex items-baseline gap-1">
-            <span class="stat-number text-3xl font-bold text-green-400">100.0</span>
-            <span class="text-sm text-slate-500 font-medium">%</span>
-          </div>
+          <div class="flex items-baseline gap-1"><span class="stat-number text-3xl font-bold text-green-400">0.0</span><span class="text-sm text-slate-500 font-medium">%</span></div>
         </div>
         <div class="h-0.5 w-full bg-gradient-to-r from-transparent via-green-400/40 to-transparent mt-3"></div>
       </div>
       <div class="glass-card p-5 rounded-2xl fade-in stagger-3">
-        <div class="flex items-end justify-between mb-2">
-          <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Fallidos</p>
-          <div class="flex items-baseline gap-1">
-            <span class="stat-number text-3xl font-bold text-green-400">0</span>
-            <span class="text-sm text-slate-500 font-medium">tests</span>
-          </div>
-        </div>
+        <div class="flex items-end justify-between mb-2"><p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Fallidos</p><div class="flex items-baseline gap-1"><span class="stat-number text-3xl font-bold text-green-400">0</span><span class="text-sm text-slate-500 font-medium">tests</span></div></div>
         <div class="h-0.5 w-full bg-gradient-to-r from-transparent via-green-400/40 to-transparent mt-3"></div>
       </div>
-      <div class="glass-card p-5 rounded-2xl fade-in stagger-4">
-        <div class="flex items-end justify-between mb-2">
-          <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Skipped</p>
-          <div class="flex items-baseline gap-1">
-            <span class="stat-number text-3xl font-bold text-green-400">0</span>
-            <span class="text-sm text-slate-500 font-medium">tests</span>
-          </div>
-        </div>
-        <div class="h-0.5 w-full bg-gradient-to-r from-transparent via-green-400/40 to-transparent mt-3"></div>
-      </div>
-      <div class="glass-card p-5 rounded-2xl fade-in stagger-5">
-        <div class="flex items-end justify-between mb-2">
-          <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Lighthouse</p>
-          <div class="flex items-baseline gap-1">
-            <span class="stat-number text-3xl font-bold text-green-400">99</span>
-            <span class="text-sm text-slate-500 font-medium">score</span>
-          </div>
-        </div>
-        <div class="h-0.5 w-full bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent mt-3"></div>
-      </div>
+      <div class="glass-card p-5 rounded-2xl fade-in stagger-4"><div class="flex items-end justify-between mb-2"><p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Skipped</p><div class="flex items-baseline gap-1"><span class="stat-number text-3xl font-bold text-green-400">0</span><span class="text-sm text-slate-500 font-medium">tests</span></div></div><div class="h-0.5 w-full bg-gradient-to-r from-transparent via-green-400/40 to-transparent mt-3"></div></div>
+      <div class="glass-card p-5 rounded-2xl fade-in stagger-5"><div class="flex items-end justify-between mb-2"><p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">AI Healing</p><div class="flex items-baseline gap-1"><span class="stat-number text-3xl font-bold text-amber-400">0</span><span class="text-sm text-slate-500 font-medium">suggestions</span></div></div><div class="h-0.5 w-full bg-gradient-to-r from-transparent via-amber-400/40 to-transparent mt-3"></div></div>
     </div>
 
     <!-- Charts Row -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      <div class="glass-card p-6 rounded-2xl fade-in stagger-1">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-sm font-semibold text-slate-200">Tests por Suite</h3>
-          <span class="text-xs text-slate-500">42 tests</span>
-        </div>
-        <div class="chart-container">
-          <canvas id="suiteChart"></canvas>
-        </div>
-      </div>
-      <div class="glass-card p-6 rounded-2xl fade-in stagger-2">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-sm font-semibold text-slate-200">Estado Global</h3>
-          <span class="text-xs text-slate-500">Pass / Fail / Skip</span>
-        </div>
-        <div class="chart-container">
-          <canvas id="statusChart"></canvas>
-        </div>
-      </div>
+      <div class="glass-card p-6 rounded-2xl fade-in stagger-1"><div class="flex items-center justify-between mb-6"><h3 class="text-sm font-semibold text-slate-200">Tests por Suite</h3><span class="text-xs text-slate-500">0 tests</span></div><div class="chart-container"><canvas id="suiteChart"></canvas></div></div>
+      <div class="glass-card p-6 rounded-2xl fade-in stagger-2"><div class="flex items-center justify-between mb-6"><h3 class="text-sm font-semibold text-slate-200">Estado Global</h3><span class="text-xs text-slate-500">Pass / Fail / Skip</span></div><div class="chart-container"><canvas id="statusChart"></canvas></div></div>
     </div>
 
-    <!-- Test Table -->
-    <div class="glass-card rounded-2xl overflow-hidden fade-in stagger-1">
-      <div class="p-6 border-b border-slate-800/50">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
-          <h3 class="text-sm font-semibold text-slate-200">Ejemplos de Tests</h3>
-          <div class="flex flex-wrap gap-2">
-            <button onclick="filterSuite('all')" class="suite-tab px-3 py-1 rounded-md text-sm bg-blue-500/20 text-blue-300 border border-blue-500/30">Todo (42)</button>
-            <button onclick="filterSuite('smoke')" class="suite-tab px-3 py-1 rounded-md text-sm bg-slate-800 text-slate-400 border border-slate-700/50 hover:bg-slate-700">Smoke (13)</button>
-            <button onclick="filterSuite('regression')" class="suite-tab px-3 py-1 rounded-md text-sm bg-slate-800 text-slate-400 border border-slate-700/50 hover:bg-slate-700">Regression (6)</button>
-            <button onclick="filterSuite('api')" class="suite-tab px-3 py-1 rounded-md text-sm bg-slate-800 text-slate-400 border border-slate-700/50 hover:bg-slate-700">API (12)</button>
-            <button onclick="filterSuite('a11y')" class="suite-tab px-3 py-1 rounded-md text-sm bg-slate-800 text-slate-400 border border-slate-700/50 hover:bg-slate-700">A11y (3)</button>
-            <button onclick="filterSuite('visual')" class="suite-tab px-3 py-1 rounded-md text-sm bg-slate-800 text-slate-400 border border-slate-700/50 hover:bg-slate-700">Visual (8)</button>
-          </div>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead class="table-header-bg">
-              <tr>
-                <th class="px-4 py-3.5 text-slate-400 font-medium text-left">Test</th>
-                <th class="px-4 py-3.5 text-slate-400 font-medium text-left">Suite</th>
-                <th class="px-4 py-3.5 text-slate-400 font-medium text-left">Estado</th>
-                <th class="px-4 py-3.5 text-slate-400 font-medium text-left">Duración</th>
-                <th class="px-4 py-3.5 text-slate-400 font-medium text-left">Archivo</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-800/50" id="testTableBody">
-              <!-- Smoke -->
-              <tr class="test-row group" data-suite="smoke" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should display all 6 products</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Smoke</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">1061ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="smoke" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should add product to cart</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Smoke</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">748ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="smoke" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should remove product from cart</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Smoke</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">689ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="smoke" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should navigate to cart page</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Smoke</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">653ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="smoke" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should sort products A to Z</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Smoke</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">666ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="smoke" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should sort products Z to A</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Smoke</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">673ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="smoke" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should sort products low to high</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Smoke</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">670ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="smoke" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should sort products high to low</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Smoke</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">682ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/smoke/inventory.smoke.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="smoke" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should login successfully with standard user</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Smoke</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">867ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/smoke/login.smoke.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="smoke" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should show error for locked out user</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Smoke</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">557ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/smoke/login.smoke.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="smoke" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should show error for invalid credentials</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Smoke</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">545ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/smoke/login.smoke.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="smoke" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should show error for empty username</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Smoke</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">356ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/smoke/login.smoke.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="smoke" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should show error for empty password</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Smoke</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">365ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/smoke/login.smoke.cy.ts</td>
-              </tr>
-              <!-- Regression -->
-              <tr class="test-row group" data-suite="regression" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should complete full checkout with single item</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Regression</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">2252ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/regression/checkout.regression.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="regression" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should complete full checkout with multiple items</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Regression</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">1736ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/regression/checkout.regression.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="regression" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should cancel checkout at info step</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Regression</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">1005ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/regression/checkout.regression.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="regression" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should cancel checkout at overview step</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Regression</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">1542ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/regression/checkout.regression.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="regression" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should show validation errors for empty checkout fields</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Regression</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">862ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/regression/checkout.regression.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="regression" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should persist cart after logout and login</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Regression</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">1238ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/regression/checkout.regression.cy.ts</td>
-              </tr>
-              <!-- API -->
-              <tr class="test-row group" data-suite="api" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should get all users</td>
-                <td class="px-4 py-3 text-sm text-slate-500">API</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">178ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="api" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should get single user by id</td>
-                <td class="px-4 py-3 text-sm text-slate-500">API</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">50ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="api" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should get all posts</td>
-                <td class="px-4 py-3 text-sm text-slate-500">API</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">56ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="api" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should get single post by id</td>
-                <td class="px-4 py-3 text-sm text-slate-500">API</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">42ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="api" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should get posts by user</td>
-                <td class="px-4 py-3 text-sm text-slate-500">API</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">48ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="api" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should get comments for a post</td>
-                <td class="px-4 py-3 text-sm text-slate-500">API</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">46ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="api" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should get all albums</td>
-                <td class="px-4 py-3 text-sm text-slate-500">API</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">44ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="api" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should get all photos</td>
-                <td class="px-4 py-3 text-sm text-slate-500">API</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">318ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="api" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should get all todos</td>
-                <td class="px-4 py-3 text-sm text-slate-500">API</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">340ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="api" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should create a post</td>
-                <td class="px-4 py-3 text-sm text-slate-500">API</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">52ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="api" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should update a post</td>
-                <td class="px-4 py-3 text-sm text-slate-500">API</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">53ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="api" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should delete a post</td>
-                <td class="px-4 py-3 text-sm text-slate-500">API</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">53ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/api/jsonplaceholder.api.cy.ts</td>
-              </tr>
-              <!-- A11y -->
-              <tr class="test-row group" data-suite="a11y" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should have no accessibility violations on login page</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Accessibility</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">611ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/accessibility/a11y.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="a11y" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should have no accessibility violations on inventory page</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Accessibility</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">677ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/accessibility/a11y.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="a11y" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should have no accessibility violations on login error state</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Accessibility</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">555ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/accessibility/a11y.cy.ts</td>
-              </tr>
-              <!-- Visual -->
-              <tr class="test-row group" data-suite="visual" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should match login page baseline</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Visual</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">838ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/visual/visual.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="visual" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should match inventory page baseline</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Visual</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">606ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/visual/visual.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="visual" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should match cart page baseline</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Visual</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">838ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/visual/visual.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="visual" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should match checkout info page baseline</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Visual</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">786ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/visual/visual.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="visual" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should match checkout overview page baseline</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Visual</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">1359ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/visual/visual.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="visual" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should match checkout complete page baseline</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Visual</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">1446ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/visual/visual.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="visual" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should match inventory page with different sort orders</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Visual</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">1045ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/visual/visual.cy.ts</td>
-              </tr>
-              <tr class="test-row group" data-suite="visual" data-status="passed">
-                <td class="px-4 py-3 text-sm text-slate-200">should match login page error state baseline</td>
-                <td class="px-4 py-3 text-sm text-slate-500">Visual</td>
-                <td class="px-4 py-3 text-sm"><span class="badge badge-passed"><span class="status-dot dot-passed"></span>passed</span></td>
-                <td class="px-4 py-3 text-sm text-slate-400 mono">644ms</td>
-                <td class="px-4 py-3 text-sm text-slate-500 mono">cypress/e2e/visual/visual.cy.ts</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    <!-- Videos de Pruebas -->
-    <div class="glass-card rounded-2xl overflow-hidden fade-in stagger-1 mt-8">
-      <div class="p-6 border-b border-slate-800/50">
-        <h3 class="text-sm font-semibold text-slate-200 mb-6">Videos de Pruebas</h3>
-        <p class="text-sm text-slate-400 mb-6">
-          Reproducción directa de videos de cada suite. Los videos se suben automáticamente después de cada ejecución del CI.
-        </p>
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4" id="videoGrid">
-          <!-- Videos se cargan dinámicamente desde videos.json -->
-        </div>
-        <div class="mt-6 p-4 rounded-lg bg-slate-800/30 border border-slate-700/50">
-          <p class="text-xs text-slate-400 font-mono mb-2">
-            &gt; Los videos se reproducen directamente desde este reporte.<br>
-            &gt; Se actualizan automáticamente después de cada ejecución del CI.<br>
-            &gt; Si no hay videos, es porque el workflow "Deploy Videos" aún no se ha ejecutado.
-          </p>
-        </div>
-      </div>
+    <!-- Suite Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      
+      <div class="glass-card p-5 rounded-xl fade-in stagger-1">
+        <div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 rounded-lg bg-blue20 flex items-center justify-center"><svg class="w-5 h-5 text-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z</svg></div><span class="font-semibold text-slate-200 capitalize">smoke</span></div>
+        <div class="space-y-2"><div class="flex justify-between"><span class="text-slate-400 text-sm">Pasados</span><span class="font-semibold text-green-400 mono">0</span></div><div class="flex justify-between"><span class="text-slate-400 text-sm">Fallidos</span><span class="font-semibold text-red-400 mono">0</span></div><div class="flex justify-between"><span class="text-slate-400 text-sm">Skipped</span><span class="font-semibold text-amber-400 mono">0</span></div><div class="flex justify-between border-t border-slate-800/50 pt-2"><span class="text-slate-400 text-sm">Pass Rate</span><span class="font-bold text-green-400">0.0%</span></div></div></div>
+      
+      <div class="glass-card p-5 rounded-xl fade-in stagger-2">
+        <div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 rounded-lg bg-purple20 flex items-center justify-center"><svg class="w-5 h-5 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z</svg></div><span class="font-semibold text-slate-200 capitalize">regression</span></div>
+        <div class="space-y-2"><div class="flex justify-between"><span class="text-slate-400 text-sm">Pasados</span><span class="font-semibold text-green-400 mono">0</span></div><div class="flex justify-between"><span class="text-slate-400 text-sm">Fallidos</span><span class="font-semibold text-red-400 mono">0</span></div><div class="flex justify-between"><span class="text-slate-400 text-sm">Skipped</span><span class="font-semibold text-amber-400 mono">0</span></div><div class="flex justify-between border-t border-slate-800/50 pt-2"><span class="text-slate-400 text-sm">Pass Rate</span><span class="font-bold text-green-400">0.0%</span></div></div></div>
+      
+      <div class="glass-card p-5 rounded-xl fade-in stagger-3">
+        <div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 rounded-lg bg-cyan20 flex items-center justify-center"><svg class="w-5 h-5 text-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">M13 10V3L4 14h7v7l9-11h-7z</svg></div><span class="font-semibold text-slate-200 capitalize">api</span></div>
+        <div class="space-y-2"><div class="flex justify-between"><span class="text-slate-400 text-sm">Pasados</span><span class="font-semibold text-green-400 mono">0</span></div><div class="flex justify-between"><span class="text-slate-400 text-sm">Fallidos</span><span class="font-semibold text-red-400 mono">0</span></div><div class="flex justify-between"><span class="text-slate-400 text-sm">Skipped</span><span class="font-semibold text-amber-400 mono">0</span></div><div class="flex justify-between border-t border-slate-800/50 pt-2"><span class="text-slate-400 text-sm">Pass Rate</span><span class="font-bold text-green-400">0.0%</span></div></div></div>
+      
+      <div class="glass-card p-5 rounded-xl fade-in stagger-4">
+        <div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 rounded-lg bg-green20 flex items-center justify-center"><svg class="w-5 h-5 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z</svg></div><span class="font-semibold text-slate-200 capitalize">accessibility</span></div>
+        <div class="space-y-2"><div class="flex justify-between"><span class="text-slate-400 text-sm">Pasados</span><span class="font-semibold text-green-400 mono">0</span></div><div class="flex justify-between"><span class="text-slate-400 text-sm">Fallidos</span><span class="font-semibold text-red-400 mono">0</span></div><div class="flex justify-between"><span class="text-slate-400 text-sm">Skipped</span><span class="font-semibold text-amber-400 mono">0</span></div><div class="flex justify-between border-t border-slate-800/50 pt-2"><span class="text-slate-400 text-sm">Pass Rate</span><span class="font-bold text-green-400">0.0%</span></div></div></div>
+      
+      <div class="glass-card p-5 rounded-xl fade-in stagger-5">
+        <div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 rounded-lg bg-orange20 flex items-center justify-center"><svg class="w-5 h-5 text-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z</svg></div><span class="font-semibold text-slate-200 capitalize">visual</span></div>
+        <div class="space-y-2"><div class="flex justify-between"><span class="text-slate-400 text-sm">Pasados</span><span class="font-semibold text-green-400 mono">0</span></div><div class="flex justify-between"><span class="text-slate-400 text-sm">Fallidos</span><span class="font-semibold text-red-400 mono">0</span></div><div class="flex justify-between"><span class="text-slate-400 text-sm">Skipped</span><span class="font-semibold text-amber-400 mono">0</span></div><div class="flex justify-between border-t border-slate-800/50 pt-2"><span class="text-slate-400 text-sm">Pass Rate</span><span class="font-bold text-green-400">0.0%</span></div></div></div>
+      
     </div>
 
-      <!-- Footer -->
-      <footer class="mt-8 pt-6 border-t border-slate-800/30">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 text-sm text-slate-500">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-            <span>Cypress QA Pipeline</span>
-          </div>
-          <span class="text-xs">42 de 42 tests pasando • Generado con CTRF</span>
-        </div>
-      </footer>
-    </div>
+    <!-- Healer Suggestions Section -->
+    
+
+    <!-- Footer -->
+    <footer class="mt-8 pt-6 border-t border-slate-800/30"><div class="flex flex-col md:flex-row md:items-center justify-between gap-3 text-sm text-slate-500"><div class="flex items-center gap-2"><svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg><span>Cypress QA Pipeline</span></div><span class="text-xs">0 tests • 0.0% pass rate • Built with CTRF + Self-Healing</span></div></footer>
   </div>
 
   <script>
     const suiteCtx = document.getElementById('suiteChart').getContext('2d');
-    new Chart(suiteCtx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Smoke', 'API', 'Regression', 'Visual', 'Accessibility'],
-        datasets: [{
-          data: [13, 12, 6, 8, 3],
-          backgroundColor: ['#3b82f6', '#22d3ee', '#a855f7', '#f59e0b', '#64748b'],
-          borderWidth: 0,
-          hoverOffset: 4,
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, padding: 20 } },
-          tooltip: {
-            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-            titleColor: '#e2e8f0',
-            bodyColor: '#cbd5e1',
-            borderColor: 'rgba(255,255,255,0.1)',
-            borderWidth: 1,
-            padding: 10,
-          }
-        },
-        cutout: '70%',
-      }
-    });
+    new Chart(suiteCtx, { type: 'doughnut', data: { labels: ["Smoke","Regression","Api","Accessibility","Visual"], datasets: [{ data: [0,0,0,0,0], backgroundColor: ['#3b82f6', '#22d3ee', '#a855f7', '#f59e0b', '#64748b'], borderWidth: 0, hoverOffset: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, padding: 20 } }, tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', titleColor: '#e2e8f0', bodyColor: '#cbd5e1', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, padding: 10 } }, cutout: '70%' } });
 
     const statusCtx = document.getElementById('statusChart').getContext('2d');
-    new Chart(statusCtx, {
-      type: 'pie',
-      data: {
-        labels: ['Passed', 'Failed', 'Skipped'],
-        datasets: [{
-          data: [42, 0, 0],
-          backgroundColor: ['#22d3ee', '#ef4444', '#f59e0b'],
-          borderWidth: 0,
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, padding: 20 } },
-        },
-      }
-    });
+    new Chart(statusCtx, { type: 'pie', data: { labels: ['Passed', 'Failed', 'Skipped'], datasets: [{ data: [0, 0, 0], backgroundColor: ['#22d3ee', '#ef4444', '#f59e0b'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 }, padding: 20 } } } });
 
-    function filterSuite(suite) {
-      document.querySelectorAll('.suite-tab').forEach(tab => {
-        const isActive = suite === 'all' ? tab.id === 'tab-all' : tab.getAttribute('data-suite') === suite;
-        tab.className = isActive
-          ? 'suite-tab px-3 py-1 rounded-md text-sm bg-blue-500/20 text-blue-300 border border-blue-500/30'
-          : 'suite-tab px-3 py-1 rounded-md text-sm bg-slate-800 text-slate-400 border border-slate-700/50 hover:bg-slate-700';
-      });
-      document.querySelectorAll('.test-row').forEach(row => {
-        const match = suite === 'all' || row.getAttribute('data-suite') === suite;
-        row.style.display = match ? '' : 'none';
-      });
-    }
-
-    // Cargar videos desde videos.json
-    async function loadVideos() {
-      try {
-        const response = await fetch('videos.json');
-        if (!response.ok) {
-          document.getElementById('videoGrid').innerHTML = `
-            <div class="col-span-full p-6 text-center text-slate-500">
-              No hay videos disponibles aún. Ejecuta el CI para generarlos.
-            </div>
-          `;
-          return;
-        }
-        const videos = await response.json();
-        const grid = document.getElementById('videoGrid');
-        let html = '';
-
-        const suiteColors = {
-          smoke: 'bg-blue-500/20 text-blue-400',
-          regression: 'bg-purple-500/20 text-purple-400',
-          api: 'bg-cyan-500/20 text-cyan-400',
-          a11y: 'bg-green-500/20 text-green-400',
-          visual: 'bg-orange-500/20 text-orange-400'
-        };
-
-        const suiteIcons = {
-          smoke: 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-          regression: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-          api: 'M13 10V3L4 14h7v7l9-11h-7z',
-          a11y: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-          visual: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z'
-        };
-
-        const suiteLabels = {
-          smoke: 'Smoke',
-          regression: 'Regression',
-          api: 'API',
-          a11y: 'Accessibility',
-          visual: 'Visual'
-        };
-
-        for (const [suite, suiteVideos] of Object.entries(videos)) {
-          if (!suiteVideos || suiteVideos.length === 0) continue;
-          const colorClass = suiteColors[suite] || 'bg-slate-500/20 text-slate-400';
-          const iconPath = suiteIcons[suite] || 'M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
-          const label = suiteLabels[suite] || suite;
-
-          html += `
-            <div class="glass-card p-5 rounded-xl">
-              <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-lg ${colorClass} flex items-center justify-center">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${iconPath}"></path>
-                  </svg>
-                </div>
-                <span class="font-semibold text-slate-200">${label} (${suiteVideos.length})</span>
-              </div>
-              <div class="space-y-3">
-          `;
-
-          for (const video of suiteVideos) {
-            html += `
-              <div class="glass-card p-4 rounded-lg border border-slate-700/50">
-                <div class="flex items-start gap-3 mb-3">
-                  <div class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <div class="text-sm text-slate-200 font-medium truncate" title="${video.name}">${video.name}</div>
-                    <div class="text-xs text-slate-500">${suite}</div>
-                  </div>
-                </div>
-                <video width="100%" controls preload="metadata" class="w-full rounded-lg bg-black">
-                  <source src="${video.path}" type="video/mp4">
-                  Tu navegador no soporta reproducción de video.
-                </video>
-              </div>
-            `;
-          }
-
-          html += `</div></div>`;
-        }
-
-        if (!html) {
-          html = `
-            <div class="col-span-full p-6 text-center text-slate-500">
-              No hay videos disponibles aún. Ejecuta el CI para generarlos.
-            </div>
-          `;
-        }
-
-        grid.innerHTML = html;
-      } catch (error) {
-        document.getElementById('videoGrid').innerHTML = `
-          <div class="col-span-full p-6 text-center text-slate-500">
-            Error cargando videos. Asegúrate de que videos.json exista en gh-pages.
-          </div>
-        `;
-      }
-    }
-
-    loadVideos();
+    function copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => { const toast = document.createElement('div'); toast.textContent = 'Copied: ' + text.substring(0, 50); toast.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #22d3ee; color: #0f172a; padding: 12px 20px; border-radius: 8px; font-weight: 600; z-index: 9999; box-shadow: 0 4px 20px rgba(34, 211, 238, 0.4);'; document.body.appendChild(toast); setTimeout(() => toast.remove(), 2000); }); }
   </script>
 </body>
 </html>

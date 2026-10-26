@@ -1,8 +1,9 @@
 import { defineConfig } from 'cypress';
+import { setupCtrfPlugin } from 'cypress-ctrf-json-reporter/plugin';
 
 export default defineConfig({
   e2e: {
-      baseUrl: 'https://www.saucedemo.com',
+    baseUrl: 'https://www.saucedemo.com',
     specPattern: 'cypress/e2e/**/*.cy.{ts,tsx,js}',
     supportFile: 'cypress/support/e2e.ts',
     video: true,
@@ -17,6 +18,9 @@ export default defineConfig({
     retries: {
       runMode: 2,
       openMode: 0,
+    },
+    setupNodeEvents(on, config) {
+      setupCtrfPlugin(on);
     },
   },
 });

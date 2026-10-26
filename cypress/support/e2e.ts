@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import './healer';
 
 declare global {
   namespace Cypress {

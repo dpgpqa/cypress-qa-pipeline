@@ -72,7 +72,7 @@ describe('Regression Tests - Checkout Flow', () => {
       CHECKOUT_INFO.emptyFirstName.lastName,
       CHECKOUT_INFO.emptyFirstName.postalCode
     );
-    checkoutInfoPage.clickContinue();
+    checkoutInfoPage.clickContinueExpectingError();
 
     checkoutInfoPage.shouldShowError('Error: First Name is required');
   });
@@ -87,7 +87,7 @@ describe('Regression Tests - Checkout Flow', () => {
       CHECKOUT_INFO.emptyLastName.lastName,
       CHECKOUT_INFO.emptyLastName.postalCode
     );
-    checkoutInfoPage.clickContinue();
+    checkoutInfoPage.clickContinueExpectingError();
 
     checkoutInfoPage.shouldShowError('Error: Last Name is required');
   });
@@ -102,7 +102,7 @@ describe('Regression Tests - Checkout Flow', () => {
       CHECKOUT_INFO.emptyPostalCode.lastName,
       CHECKOUT_INFO.emptyPostalCode.postalCode
     );
-    checkoutInfoPage.clickContinue();
+    checkoutInfoPage.clickContinueExpectingError();
 
     checkoutInfoPage.shouldShowError('Error: Postal Code is required');
   });
@@ -116,7 +116,7 @@ describe('Regression Tests - Checkout Flow', () => {
     cartPage.shouldBeOnCart();
   });
 
-  it('should cancel checkout at overview step and return to cart', () => {
+  it('should cancel checkout at overview step and return to inventory', () => {
     inventoryPage.addProductToCart(PRODUCTS[0].name);
     inventoryPage.goToCart();
     cartPage.clickCheckout();
@@ -129,7 +129,7 @@ describe('Regression Tests - Checkout Flow', () => {
     checkoutInfoPage.clickContinue();
 
     checkoutOverviewPage.clickCancel();
-    cartPage.shouldBeOnCart();
+    inventoryPage.shouldBeOnInventory();
   });
 
   it('should continue shopping from cart and return to inventory', () => {

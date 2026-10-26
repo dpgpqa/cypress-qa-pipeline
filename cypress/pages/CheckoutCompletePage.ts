@@ -2,9 +2,9 @@
 
 export class CheckoutCompletePage {
   readonly url = '/checkout-complete.html';
-  readonly completeHeader = '.complete-header';
-  readonly completeText = '.complete-text';
-  readonly backHomeButton = '[data-test="back-to-home"]';
+  readonly completeHeader = '.complete-header, h2.complete-header';
+  readonly completeText = '.complete-text, .complete-text p';
+  readonly backHomeButton = '[data-test="back-to-home"], #back-to-products, button[data-test="back-to-home"]';
 
   shouldBeOnCheckoutComplete() {
     cy.url().should('include', '/checkout-complete.html');
@@ -12,12 +12,13 @@ export class CheckoutCompletePage {
   }
 
   shouldShowSuccessMessage() {
-    cy.get(this.completeHeader).should('contain', 'Thank you for your order!');
+    cy.get(this.completeHeader).should('be.visible').and('contain', 'Thank you for your order!');
     return this;
   }
 
   clickBackHome() {
-    cy.get(this.backHomeButton).click();
+    cy.get(this.backHomeButton).should('be.visible').click();
+    cy.url().should('include', '/inventory.html');
     return this;
   }
 }

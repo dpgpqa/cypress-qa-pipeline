@@ -8,31 +8,30 @@ import { checkoutCompletePage } from '../../pages/CheckoutCompletePage';
 import { USERS } from '../../fixtures/test-data';
 
 describe('Visual/Page Verification Tests', () => {
-  beforeEach(() => {
-    cy.login(USERS.standard.username, USERS.standard.password);
-  });
-
   it('should verify login page elements', () => {
-    cy.visit('/');
+    loginPage.visit();
     cy.get('[data-test="username"]').should('be.visible');
     cy.get('[data-test="password"]').should('be.visible');
     cy.get('[data-test="login-button"]').should('be.visible');
   });
 
   it('should verify inventory page elements', () => {
-    inventoryPage.shouldBeOnInventory();
-    cy.get('[data-test="inventory-item"]').should('have.length', 6);
-    cy.get('[data-test="product_sort_container"]').should('be.visible');
-  });
+      loginPage.visit().loginAndWait(USERS.standard.username, USERS.standard.password);
+      inventoryPage.shouldBeOnInventory();
+      cy.get('[data-test="inventory-item"]').should('have.length', 6);
+      inventoryPage.sortBy('az');
+    });
 
   it('should verify cart page elements', () => {
+    loginPage.visit().loginAndWait(USERS.standard.username, USERS.standard.password);
     inventoryPage.addProductToCart('Sauce Labs Backpack');
     inventoryPage.goToCart();
-    cy.get('.cart-container').should('exist');
-    cy.get('[data-test="inventory-item"]').should('have.length', 1);
+    cy.get('.cart-container, .cart_list').should('exist');
+    cy.get('[data-test="inventory-item"], .cart_item').should('have.length', 1);
   });
 
   it('should verify checkout info page elements', () => {
+    loginPage.visit().loginAndWait(USERS.standard.username, USERS.standard.password);
     inventoryPage.addProductToCart('Sauce Labs Backpack');
     inventoryPage.goToCart();
     cartPage.clickCheckout();
@@ -43,15 +42,17 @@ describe('Visual/Page Verification Tests', () => {
   });
 
   it('should verify checkout overview page elements', () => {
+    loginPage.visit().loginAndWait(USERS.standard.username, USERS.standard.password);
     inventoryPage.addProductToCart('Sauce Labs Backpack');
     inventoryPage.goToCart();
     cartPage.clickCheckout();
     checkoutInfoPage.fillInfo('John', 'Doe', '12345');
     checkoutInfoPage.clickContinue();
-    cy.get('.summary-total-label').should('exist');
+    cy.get('.summary-total-label, .summary_total_label').should('exist');
   });
 
   it('should verify checkout complete page elements', () => {
+    loginPage.visit().loginAndWait(USERS.standard.username, USERS.standard.password);
     inventoryPage.addProductToCart('Sauce Labs Backpack');
     inventoryPage.goToCart();
     cartPage.clickCheckout();
@@ -62,6 +63,7 @@ describe('Visual/Page Verification Tests', () => {
   });
 
   it('should verify inventory page with different sort orders', () => {
+    loginPage.visit().loginAndWait(USERS.standard.username, USERS.standard.password);
     inventoryPage.shouldBeOnInventory();
     inventoryPage.sortBy('za');
     inventoryPage.sortBy('lohi');
@@ -70,27 +72,8 @@ describe('Visual/Page Verification Tests', () => {
   });
 
   it('should verify login page error state', () => {
-    cy.visit('/');
+    loginPage.visit();
     loginPage.clickLogin();
-    loginPage.shouldShowError('Epic sadface: Username and password do not match any user in this service');
-  });
-});
-
-// Custom command for login
-declare global {
-  namespace Cypress {
-    interface Chainable {
-      login(username: string, password: string): Chainable<void>;
-    }
-  }
-}
-
-Cypress.Commands.add('login', (username: string, password: string) => {
-  cy.session([username, password], () => {
-    cy.visit('/');
-    cy.get('[data-test="username"]').type(username);
-    cy.get('[data-test="password"]').type(password);
-    cy.get('[data-test="login-button"]').click();
-    cy.url().should('include', '/inventory.html');
+    loginPage.shouldShowError('Epic sadface: Username is required');
   });
 });

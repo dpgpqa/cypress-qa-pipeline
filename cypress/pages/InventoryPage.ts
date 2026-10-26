@@ -2,14 +2,17 @@
 
 export class InventoryPage {
   readonly url = '/inventory.html';
-  readonly productSort = '[data-test="product_sort_container"]';
-  readonly productItems = '[data-test="inventory-item"]';
-  readonly productNames = '.inventory_item_name';
-  readonly productPrices = '.inventory_item_price';
-  readonly addToCartButtons = '[data-test^="add-to-cart-"]';
-  readonly cartLink = '[data-test="shopping_cart_link"]';
-  readonly cartBadge = '[data-test="shopping_cart_badge"]';
-  readonly menuButton = '#react-burger-menu-btn';
+  // Multiple fallback selectors for sort dropdown
+  readonly productSort = 'select.product_sort_container, [data-test="product_sort_container"], select[data-test="product_sort_container"]';
+  readonly productItems = '[data-test="inventory-item"], .inventory_item';
+  readonly productNames = '.inventory_item_name, [data-test="inventory-item-name"]';
+  readonly productPrices = '.inventory_item_price, [data-test="inventory-item-price"]';
+  // Add to cart buttons - multiple fallbacks
+  readonly addToCartButtons = '[data-test^="add-to-cart-"], button.btn_primary.btn_inventory, .inventory_item button';
+  // Cart link - multiple fallbacks
+  readonly cartLink = '[data-test="shopping_cart_link"], .shopping_cart_link, a.shopping_cart_link, #shopping_cart_container a';
+  readonly cartBadge = '[data-test="shopping_cart_badge"], .shopping_cart_badge, .cart_badge';
+  readonly menuButton = '#react-burger-menu-btn, #menu_button, button[id*="menu"]';
 
   shouldBeOnInventory() {
     cy.url().should('include', '/inventory.html');
@@ -26,15 +29,17 @@ export class InventoryPage {
   }
 
   sortBy(option: 'az' | 'za' | 'lohi' | 'hilo') {
-    cy.get(this.productSort).select(option);
+    cy.get(this.productSort).should('be.visible').select(option);
     return this;
   }
 
   addProductToCart(productName: string) {
+    // Use parents to go up to the inventory item, then find the button
     cy.get(this.productItems)
-      .contains('.inventory_item_name', productName)
-      .parent()
-      .find('button')
+      .contains(productName)
+      .parents(this.productItems)
+      .find(this.addToCartButtons)
+      .first()
       .click();
     return this;
   }
@@ -44,7 +49,8 @@ export class InventoryPage {
   }
 
   goToCart() {
-    cy.get(this.cartLink).click();
+    cy.get(this.cartLink).should('be.visible').click();
+    cy.url().should('include', '/cart.html');
     return this;
   }
 
@@ -55,7 +61,8 @@ export class InventoryPage {
 
   logout() {
     this.openMenu();
-    cy.get('#logout_sidebar_link').click();
+    cy.get('#logout_sidebar_link, a[id="logout_sidebar_link"]').click();
+    cy.url().should('include', '/');
     return this;
   }
 }
