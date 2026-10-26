@@ -34,8 +34,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Start test server
-        run: node test-server/server.js &
       - name: Run smoke tests
         run: npm run test:smoke
       - name: Upload videos (always)
@@ -64,8 +62,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Start test server
-        run: node test-server/server.js &
       - name: Run regression tests
         run: npm run test:regression
       - name: Upload videos (always)
@@ -94,8 +90,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Start test server
-        run: node test-server/server.js &
       - name: Run API tests
         run: npm run test:api
       - name: Upload videos (always)
@@ -124,8 +118,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Start test server
-        run: node test-server/server.js &
       - name: Run accessibility tests
         run: npm run test:a11y
       - name: Upload videos (always)
@@ -154,8 +146,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Start test server
-        run: node test-server/server.js &
       - name: Run visual regression tests
         run: npm run test:visual
       - name: Upload videos (always)
