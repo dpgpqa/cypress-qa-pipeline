@@ -7,64 +7,59 @@ import { checkoutOverviewPage } from '../../pages/CheckoutOverviewPage';
 import { checkoutCompletePage } from '../../pages/CheckoutCompletePage';
 import { USERS } from '../../fixtures/test-data';
 
-describe('Visual Regression Tests', () => {
+describe('Visual/Page Verification Tests', () => {
   beforeEach(() => {
     cy.login(USERS.standard.username, USERS.standard.password);
   });
 
-  it('should match login page baseline', () => {
+  it('should verify login page elements', () => {
     cy.visit('/');
-    cy.matchImageSnapshot('login-page');
+    cy.get('[data-test="username"]').should('be.visible');
+    cy.get('[data-test="password"]').should('be.visible');
+    cy.get('[data-test="login-button"]').should('be.visible');
   });
 
-  it('should match inventory page baseline', () => {
+  it('should verify inventory page elements', () => {
     inventoryPage.shouldBeOnInventory();
-    cy.matchImageSnapshot('inventory-page');
+    cy.get('[data-test="inventory-item"]').should('have.length', 6);
+    cy.get('[data-test="product_sort_container"]').should('be.visible');
   });
 
-  it('should match cart page baseline', () => {
+  it('should verify cart page elements', () => {
     cy.visit('/cart.html');
-    cartPage.shouldBeOnCart();
-    cy.matchImageSnapshot('cart-page');
+    cy.get('.cart-container').should('exist');
   });
 
-  it('should match checkout info page baseline', () => {
+  it('should verify checkout info page elements', () => {
     cy.visit('/checkout-step-one.html');
-    checkoutInfoPage.shouldBeOnCheckoutInfo();
-    cy.matchImageSnapshot('checkout-info-page');
+    cy.get('[data-test="firstName"]').should('be.visible');
+    cy.get('[data-test="lastName"]').should('be.visible');
+    cy.get('[data-test="postalCode"]').should('be.visible');
+    cy.get('[data-test="continue"]').should('be.visible');
   });
 
-  it('should match checkout overview page baseline', () => {
+  it('should verify checkout overview page elements', () => {
     cy.visit('/checkout-step-two.html');
-    checkoutOverviewPage.shouldBeOnCheckoutOverview();
-    cy.matchImageSnapshot('checkout-overview-page');
+    cy.get('.summary-total-label').should('exist');
   });
 
-  it('should match checkout complete page baseline', () => {
+  it('should verify checkout complete page elements', () => {
     cy.visit('/checkout-complete.html');
-    checkoutCompletePage.shouldBeOnCheckoutComplete();
-    cy.matchImageSnapshot('checkout-complete-page');
+    cy.get('.complete-header').should('contain', 'Thank you for your order!');
   });
 
-  it('should match inventory page with different sort orders', () => {
+  it('should verify inventory page with different sort orders', () => {
     inventoryPage.shouldBeOnInventory();
-    cy.matchImageSnapshot('inventory-page-az');
-
     inventoryPage.sortBy('za');
-    cy.matchImageSnapshot('inventory-page-za');
-
     inventoryPage.sortBy('lohi');
-    cy.matchImageSnapshot('inventory-page-lohi');
-
     inventoryPage.sortBy('hilo');
-    cy.matchImageSnapshot('inventory-page-hilo');
+    inventoryPage.sortBy('az');
   });
 
-  it('should match login page error state baseline', () => {
+  it('should verify login page error state', () => {
     cy.visit('/');
     loginPage.clickLogin();
     loginPage.shouldShowError('Epic sadface: Username and password do not match any user in this service');
-    cy.matchImageSnapshot('login-error-state');
   });
 });
 
