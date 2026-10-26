@@ -1,0 +1,21 @@
+{
+  "name": "cypress-qa-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "cypress run",
+    "test:smoke": "cypress run --spec \"cypress/e2e/smoke/**/*.cy.ts\" --browser chrome",
+    "test:regression": "cypress run --spec \"cypress/e2e/regression/**/*.cy.ts\"",
+    "test:api": "cypress run --spec \"cypress/e2e/api/**/*.cy.ts\"",
+    "test:a11y": "cypress run --spec \"cypress/e2e/accessibility/**/*.cy.ts\"",
+    "test:visual": "cypress run --spec \"cypress/e2e/visual/**/*.cy.ts\"",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.js"
+  },
+  "devDependencies": {
+    "cypress": "^13.0.0",
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "eslint": "^8.0.0"
+  }
+}
