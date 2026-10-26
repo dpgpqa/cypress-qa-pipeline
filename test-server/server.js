@@ -3,11 +3,22 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'fixtures')));
 
 // Login page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'fixtures', 'login.html'));
+});
+
+// Handle login
+app.post('/login', (req, res) => {
+  const { 'user-name': username, password } = req.body;
+  if (username === 'standard_user' && password === 'secret_sauce') {
+    res.redirect('/inventory.html');
+  } else {
+    res.sendFile(path.join(__dirname, 'fixtures', 'login.html'));
+  }
 });
 
 // Inventory page
