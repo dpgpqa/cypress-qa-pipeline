@@ -2,7 +2,7 @@ import { defineConfig } from 'cypress';
 
 export default defineConfig({
   e2e: {
-    baseUrl: 'http://localhost:3000',
+    baseUrl: 'https://www.saucedemo.com',
     specPattern: 'cypress/e2e/**/*.cy.{ts,tsx,js}',
     supportFile: 'cypress/support/e2e.ts',
     video: true,
@@ -18,11 +18,5 @@ export default defineConfig({
       runMode: 2,
       openMode: 0,
     },
-  },
-  // @ts-ignore - webServer is a valid Cypress config option at root level
-  webServer: {
-    command: 'node test-server/server.js',
-    port: 3000,
-    timeout: 60000,
   },
 });
