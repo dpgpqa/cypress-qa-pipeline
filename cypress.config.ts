@@ -19,10 +19,4 @@ export default defineConfig({
       openMode: 0,
     },
   },
-  // @ts-ignore - webServer is a valid Cypress config option
-  webServer: {
-    command: 'node test-server/server.js',
-    port: 3000,
-    timeout: 60000,
-  },
 });

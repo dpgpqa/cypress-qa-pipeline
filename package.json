@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "cypress run",
-    "test:smoke": "cypress run --spec \"cypress/e2e/smoke/**/*.cy.ts\" --browser chrome",
-    "test:regression": "cypress run --spec \"cypress/e2e/regression/**/*.cy.ts\"",
-    "test:api": "cypress run --spec \"cypress/e2e/api/**/*.cy.ts\"",
-    "test:a11y": "cypress run --spec \"cypress/e2e/accessibility/**/*.cy.ts\"",
-    "test:visual": "cypress run --spec \"cypress/e2e/visual/**/*.cy.ts\"",
+    "start": "node test-server/server.js",
+    "test:smoke": "start-server-and-test start http://localhost:3000 -- 'cypress run --spec \"cypress/e2e/smoke/**/*.cy.ts\" --browser chrome'",
+    "test:regression": "start-server-and-test start http://localhost:3000 -- 'cypress run --spec \"cypress/e2e/regression/**/*.cy.ts\"'",
+    "test:api": "start-server-and-test start http://localhost:3000 -- 'cypress run --spec \"cypress/e2e/api/**/*.cy.ts\"'",
+    "test:a11y": "start-server-and-test start http://localhost:3000 -- 'cypress run --spec \"cypress/e2e/accessibility/**/*.cy.ts\"'",
+    "test:visual": "start-server-and-test start http://localhost:3000 -- 'cypress run --spec \"cypress/e2e/visual/**/*.cy.ts\"'",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.js"
   },
