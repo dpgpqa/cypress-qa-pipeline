@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SauceDemo - Checkout Info</title>
+</head>
+<body>
+  <div class="checkout_container">
+    <form id="checkout_info_container">
+      <input data-test="firstName" placeholder="First Name" />
+      <input data-test="lastName" placeholder="Last Name" />
+      <input data-test="postalCode" placeholder="Zip/Postal Code" />
+      <input class="submit-button btn_action" data-test="continue" type="submit" value="Continue" />
+      <div class="checkout_error_container">
+        <h3 data-test="error">Error: First Name is required</h3>
+      </div>
+    </form>
+    <button class="cart_cancel_link btn_secondary" data-test="cancel">Cancel</button>
+  </div>
+</body>
+</html>

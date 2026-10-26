@@ -20,8 +20,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - run: npm run lint 2>&1 || true
-      - run: npm run typecheck 2>&1 || true
+      - run: npm run lint
+      - run: npm run typecheck
 
   smoke-tests:
     name: Smoke Tests
@@ -34,10 +34,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
+      - name: Start test server
+        run: node test-server/server.js &
       - name: Run smoke tests
-        run: npm run test:smoke 2>&1 || true
-        env:
-          BASE_URL: https://www.saucedemo.com
+        run: npm run test:smoke
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -64,10 +64,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
+      - name: Start test server
+        run: node test-server/server.js &
       - name: Run regression tests
-        run: npm run test:regression 2>&1 || true
-        env:
-          BASE_URL: https://www.saucedemo.com
+        run: npm run test:regression
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -94,10 +94,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
+      - name: Start test server
+        run: node test-server/server.js &
       - name: Run API tests
-        run: npm run test:api 2>&1 || true
-        env:
-          API_BASE_URL: https://jsonplaceholder.typicode.com
+        run: npm run test:api
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -124,10 +124,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
+      - name: Start test server
+        run: node test-server/server.js &
       - name: Run accessibility tests
-        run: npm run test:a11y 2>&1 || true
-        env:
-          BASE_URL: https://www.saucedemo.com
+        run: npm run test:a11y
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -154,10 +154,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
+      - name: Start test server
+        run: node test-server/server.js &
       - name: Run visual regression tests
-        run: npm run test:visual 2>&1 || true
-        env:
-          BASE_URL: https://www.saucedemo.com
+        run: npm run test:visual
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -179,7 +179,7 @@ jobs:
     needs: [smoke-tests, regression-tests, api-tests, accessibility-tests, visual-regression-tests]
     if: always()
     steps:
-      - run: echo "Todos los jobs terminaron. Revisa artifacts para videos y screenshots."
+      - run: echo "Todos los jobs terminaron."
 
   deploy-videos:
     name: Deploy Videos to GitHub Pages

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SauceDemo - Inventory</title>
+</head>
+<body>
+  <div class="banner">
+    <div class="header_secondary_container">
+      <a class="shopping_cart_link"><div class="shopping_cart_badge">0</div></a>
+      <button class="bm-burger-button" id="react-burger-menu-btn">Open Menu</button>
+    </div>
+  </div>
+  <div class="inventory_container">
+    <div class="inventory_list">
+      <div class="inventory_item" data-test="inventory-item">
+        <div class="inventory_item_name">Sauce Labs Backpack</div>
+        <button class="btn_inventory" data-test="add-to-cart-sauce-labs-backpack">Add to cart</button>
+      </div>
+      <div class="inventory_item" data-test="inventory-item">
+        <div class="inventory_item_name">Sauce Labs Bike Light</div>
+        <button class="btn_inventory" data-test="add-to-cart-sauce-labs-bike-light">Add to cart</button>
+      </div>
+      <div class="inventory_item" data-test="inventory-item">
+        <div class="inventory_item_name">Sauce Labs Bolt T-Shirt</div>
+        <button class="btn_inventory" data-test="add-to-cart-sauce-labs-bolt-t-shirt">Add to cart</button>
+      </div>
+      <div class="inventory_item" data-test="inventory-item">
+        <div class="inventory_item_name">Sauce Labs Fleece Jacket</div>
+        <button class="btn_inventory" data-test="add-to-cart-sauce-labs-fleece-jacket">Add to cart</button>
+      </div>
+      <div class="inventory_item" data-test="inventory-item">
+        <div class="inventory_item_name">Sauce Labs Onesie</div>
+        <button class="btn_inventory" data-test="add-to-cart-sauce-labs-onesie">Add to cart</button>
+      </div>
+      <div class="inventory_item" data-test="inventory-item">
+        <div class="inventory_item_name">Test.allTheThings() T-Shirt (Red)</div>
+        <button class="btn_inventory" data-test="add-to-cart-test.allthethings()-t-shirt-(red)">Add to cart</button>
+      </div>
+    </div>
+    <select class="product_sort_container" data-test="product_sort_container">
+      <option value="az">Name (A to Z)</option>
+      <option value="za">Name (Z to A)</option>
+      <option value="lohi">Price (low to high)</option>
+      <option value="hilo">Price (high to low)</option>
+    </select>
+  </div>
+</body>
+</html>
