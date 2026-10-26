@@ -226,11 +226,11 @@ jobs:
       - name: Organize videos and generate videos.json
         run: |
           mkdir -p videos/smoke videos/regression videos/api videos/a11y videos/visual
-          cp /tmp/smoke-videos/*.mp4 videos/smoke/ 2>/dev/null || true
-          cp /tmp/regression-videos/*.mp4 videos/regression/ 2>/dev/null || true
-          cp /tmp/api-videos/*.mp4 videos/api/ 2>/dev/null || true
-          cp /tmp/a11y-videos/*.mp4 videos/a11y/ 2>/dev/null || true
-          cp /tmp/visual-videos/*.mp4 videos/visual/ 2>/dev/null || true
+          find /tmp/smoke-videos -name "*.mp4" -exec cp {} videos/smoke/ \; 2>/dev/null || true
+          find /tmp/regression-videos -name "*.mp4" -exec cp {} videos/regression/ \; 2>/dev/null || true
+          find /tmp/api-videos -name "*.mp4" -exec cp {} videos/api/ \; 2>/dev/null || true
+          find /tmp/a11y-videos -name "*.mp4" -exec cp {} videos/a11y/ \; 2>/dev/null || true
+          find /tmp/visual-videos -name "*.mp4" -exec cp {} videos/visual/ \; 2>/dev/null || true
 
           echo "{" > videos.json
           FIRST_SUITE=true
