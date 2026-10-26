@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "test": "cypress run",
-    "test:smoke": "bash test-server/run-tests.sh smoke",
-    "test:regression": "bash test-server/run-tests.sh regression",
-    "test:api": "bash test-server/run-tests.sh api",
-    "test:a11y": "bash test-server/run-tests.sh a11y",
-    "test:visual": "bash test-server/run-tests.sh visual",
+    "test:smoke": "node test-server/start.js smoke",
+    "test:regression": "node test-server/start.js regression",
+    "test:api": "node test-server/start.js api",
+    "test:a11y": "node test-server/start.js a11y",
+    "test:visual": "node test-server/start.js visual",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.js"
   },
