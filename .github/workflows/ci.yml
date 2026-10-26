@@ -34,14 +34,23 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Run smoke tests
+      - name: Start test server
         run: |
-          node test-server/server.js &
-          sleep 5
-          npx cypress run --spec "cypress/e2e/smoke/**/*.cy.ts"
-          TEST_EXIT=$?
-          kill %1 2>/dev/null || true
-          exit $TEST_EXIT
+          node test-server/server.js > server.log 2>&1 &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:3000/ > /dev/null 2>&1; then
+              echo "Server ready"
+              break
+            fi
+            sleep 1
+          done
+      - name: Run smoke tests
+        run: npx cypress run --spec "cypress/e2e/smoke/**/*.cy.ts"
+      - name: Stop test server
+        if: always()
+        run: kill $SERVER_PID 2>/dev/null || true
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -68,14 +77,23 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Run regression tests
+      - name: Start test server
         run: |
-          node test-server/server.js &
-          sleep 5
-          npx cypress run --spec "cypress/e2e/regression/**/*.cy.ts"
-          TEST_EXIT=$?
-          kill %1 2>/dev/null || true
-          exit $TEST_EXIT
+          node test-server/server.js > server.log 2>&1 &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:3000/ > /dev/null 2>&1; then
+              echo "Server ready"
+              break
+            fi
+            sleep 1
+          done
+      - name: Run regression tests
+        run: npx cypress run --spec "cypress/e2e/regression/**/*.cy.ts"
+      - name: Stop test server
+        if: always()
+        run: kill $SERVER_PID 2>/dev/null || true
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -102,14 +120,23 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Run API tests
+      - name: Start test server
         run: |
-          node test-server/server.js &
-          sleep 5
-          npx cypress run --spec "cypress/e2e/api/**/*.cy.ts"
-          TEST_EXIT=$?
-          kill %1 2>/dev/null || true
-          exit $TEST_EXIT
+          node test-server/server.js > server.log 2>&1 &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:3000/ > /dev/null 2>&1; then
+              echo "Server ready"
+              break
+            fi
+            sleep 1
+          done
+      - name: Run API tests
+        run: npx cypress run --spec "cypress/e2e/api/**/*.cy.ts"
+      - name: Stop test server
+        if: always()
+        run: kill $SERVER_PID 2>/dev/null || true
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -136,14 +163,23 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Run accessibility tests
+      - name: Start test server
         run: |
-          node test-server/server.js &
-          sleep 5
-          npx cypress run --spec "cypress/e2e/accessibility/**/*.cy.ts"
-          TEST_EXIT=$?
-          kill %1 2>/dev/null || true
-          exit $TEST_EXIT
+          node test-server/server.js > server.log 2>&1 &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:3000/ > /dev/null 2>&1; then
+              echo "Server ready"
+              break
+            fi
+            sleep 1
+          done
+      - name: Run accessibility tests
+        run: npx cypress run --spec "cypress/e2e/accessibility/**/*.cy.ts"
+      - name: Stop test server
+        if: always()
+        run: kill $SERVER_PID 2>/dev/null || true
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -170,14 +206,23 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       - run: npm ci
-      - name: Run visual regression tests
+      - name: Start test server
         run: |
-          node test-server/server.js &
-          sleep 5
-          npx cypress run --spec "cypress/e2e/visual/**/*.cy.ts"
-          TEST_EXIT=$?
-          kill %1 2>/dev/null || true
-          exit $TEST_EXIT
+          node test-server/server.js > server.log 2>&1 &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:3000/ > /dev/null 2>&1; then
+              echo "Server ready"
+              break
+            fi
+            sleep 1
+          done
+      - name: Run visual regression tests
+        run: npx cypress run --spec "cypress/e2e/visual/**/*.cy.ts"
+      - name: Stop test server
+        if: always()
+        run: kill $SERVER_PID 2>/dev/null || true
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
