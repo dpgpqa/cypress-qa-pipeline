@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "test": "cypress run",
-    "test:smoke": "node test-server/start.js smoke",
-    "test:regression": "node test-server/start.js regression",
-    "test:api": "node test-server/start.js api",
-    "test:a11y": "node test-server/start.js a11y",
-    "test:visual": "node test-server/start.js visual",
+    "test:smoke": "start-server-and-test start http://localhost:3000 'cypress run --spec \"cypress/e2e/smoke/**/*.cy.ts\"'",
+    "test:regression": "start-server-and-test start http://localhost:3000 'cypress run --spec \"cypress/e2e/regression/**/*.cy.ts\"'",
+    "test:api": "start-server-and-test start http://localhost:3000 'cypress run --spec \"cypress/e2e/api/**/*.cy.ts\"'",
+    "test:a11y": "start-server-and-test start http://localhost:3000 'cypress run --spec \"cypress/e2e/accessibility/**/*.cy.ts\"'",
+    "test:visual": "start-server-and-test start http://localhost:3000 'cypress run --spec \"cypress/e2e/visual/**/*.cy.ts\"'",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.js"
   },
@@ -20,6 +20,7 @@
     "cypress": "^13.0.0",
     "eslint": "^8.57.1",
     "express": "^5.3.0",
+    "start-server-and-test": "^3.0.13",
     "typescript": "^5.9.3"
   }
 }
