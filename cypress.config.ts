@@ -19,6 +19,7 @@ export default defineConfig({
       openMode: 0,
     },
   },
+  // @ts-ignore - webServer is a valid Cypress config option at root level
   webServer: {
     command: 'node test-server/server.js',
     port: 3000,
