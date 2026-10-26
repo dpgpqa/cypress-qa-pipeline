@@ -549,71 +549,16 @@
       <div class="p-6 border-b border-slate-800/50">
         <h3 class="text-sm font-semibold text-slate-200 mb-6">Videos de Pruebas</h3>
         <p class="text-sm text-slate-400 mb-6">
-          Cada ejecución de CI graba video de todos los tests (pasen o fallen). 
-          Descarga los videos desde los artifacts de GitHub Actions:
+          Reproducción directa de videos de cada suite. Los videos se suben automáticamente después de cada ejecución del CI.
         </p>
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          <div class="glass-card p-5 rounded-xl">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              </div>
-              <span class="font-semibold text-slate-200">Smoke</span>
-            </div>
-            <a href="https://github.com/dpgpqa/cypress-qa-pipeline/actions/runs/40247354458" target="_blank" class="w-full btn-video">
-              Ver artifact de videos &rarr;
-            </a>
-          </div>
-          <div class="glass-card p-5 rounded-xl">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-              </div>
-              <span class="font-semibold text-slate-200">Regression</span>
-            </div>
-            <a href="https://github.com/dpgpqa/cypress-qa-pipeline/actions/runs/40247354458" target="_blank" class="w-full btn-video">
-              Ver artifact de videos &rarr;
-            </a>
-          </div>
-          <div class="glass-card p-5 rounded-xl">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
-                <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-              </div>
-              <span class="font-semibold text-slate-200">API</span>
-            </div>
-            <a href="https://github.com/dpgpqa/cypress-qa-pipeline/actions/runs/40247354458" target="_blank" class="w-full btn-video">
-              Ver artifact de videos &rarr;
-            </a>
-          </div>
-          <div class="glass-card p-5 rounded-xl">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              </div>
-              <span class="font-semibold text-slate-200">Accessibility</span>
-            </div>
-            <a href="https://github.com/dpgpqa/cypress-qa-pipeline/actions/runs/40247354458" target="_blank" class="w-full btn-video">
-              Ver artifact de videos &rarr;
-            </a>
-          </div>
-          <div class="glass-card p-5 rounded-xl">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
-                <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z"></path></svg>
-              </div>
-              <span class="font-semibold text-slate-200">Visual</span>
-            </div>
-            <a href="https://github.com/dpgpqa/cypress-qa-pipeline/actions/runs/40247354458" target="_blank" class="w-full btn-video">
-              Ver artifact de videos &rarr;
-            </a>
-          </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4" id="videoGrid">
+          <!-- Videos se cargan dinámicamente desde videos.json -->
         </div>
         <div class="mt-6 p-4 rounded-lg bg-slate-800/30 border border-slate-700/50">
           <p class="text-xs text-slate-400 font-mono mb-2">
-            &gt; Los videos se suben como artifacts por cada job de CI.<br>
-            &gt; Expiran después de 7 días.<br>
-            &gt; Haz clic en cada card para ir directamente al artifact de esa suite.
+            &gt; Los videos se reproducen directamente desde este reporte.<br>
+            &gt; Se actualizan automáticamente después de cada ejecución del CI.<br>
+            &gt; Si no hay videos, es porque el workflow "Deploy Videos" aún no se ha ejecutado.
           </p>
         </div>
       </div>
@@ -695,6 +640,110 @@
         row.style.display = match ? '' : 'none';
       });
     }
+
+    // Cargar videos desde videos.json
+    async function loadVideos() {
+      try {
+        const response = await fetch('videos.json');
+        if (!response.ok) {
+          document.getElementById('videoGrid').innerHTML = `
+            <div class="col-span-full p-6 text-center text-slate-500">
+              No hay videos disponibles aún. Ejecuta el CI para generarlos.
+            </div>
+          `;
+          return;
+        }
+        const videos = await response.json();
+        const grid = document.getElementById('videoGrid');
+        let html = '';
+
+        const suiteColors = {
+          smoke: 'bg-blue-500/20 text-blue-400',
+          regression: 'bg-purple-500/20 text-purple-400',
+          api: 'bg-cyan-500/20 text-cyan-400',
+          a11y: 'bg-green-500/20 text-green-400',
+          visual: 'bg-orange-500/20 text-orange-400'
+        };
+
+        const suiteIcons = {
+          smoke: 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+          regression: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+          api: 'M13 10V3L4 14h7v7l9-11h-7z',
+          a11y: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+          visual: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2z'
+        };
+
+        const suiteLabels = {
+          smoke: 'Smoke',
+          regression: 'Regression',
+          api: 'API',
+          a11y: 'Accessibility',
+          visual: 'Visual'
+        };
+
+        for (const [suite, suiteVideos] of Object.entries(videos)) {
+          if (!suiteVideos || suiteVideos.length === 0) continue;
+          const colorClass = suiteColors[suite] || 'bg-slate-500/20 text-slate-400';
+          const iconPath = suiteIcons[suite] || 'M21 12a9 9 0 11-18 0 9 9 0 0118 0z';
+          const label = suiteLabels[suite] || suite;
+
+          html += `
+            <div class="glass-card p-5 rounded-xl">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-lg ${colorClass} flex items-center justify-center">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${iconPath}"></path>
+                  </svg>
+                </div>
+                <span class="font-semibold text-slate-200">${label} (${suiteVideos.length})</span>
+              </div>
+              <div class="space-y-3">
+          `;
+
+          for (const video of suiteVideos) {
+            html += `
+              <div class="glass-card p-4 rounded-lg border border-slate-700/50">
+                <div class="flex items-start gap-3 mb-3">
+                  <div class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="text-sm text-slate-200 font-medium truncate" title="${video.name}">${video.name}</div>
+                    <div class="text-xs text-slate-500">${suite}</div>
+                  </div>
+                </div>
+                <video width="100%" controls preload="metadata" class="w-full rounded-lg bg-black">
+                  <source src="${video.path}" type="video/mp4">
+                  Tu navegador no soporta reproducción de video.
+                </video>
+              </div>
+            `;
+          }
+
+          html += `</div></div>`;
+        }
+
+        if (!html) {
+          html = `
+            <div class="col-span-full p-6 text-center text-slate-500">
+              No hay videos disponibles aún. Ejecuta el CI para generarlos.
+            </div>
+          `;
+        }
+
+        grid.innerHTML = html;
+      } catch (error) {
+        document.getElementById('videoGrid').innerHTML = `
+          <div class="col-span-full p-6 text-center text-slate-500">
+            Error cargando videos. Asegúrate de que videos.json exista en gh-pages.
+          </div>
+        `;
+      }
+    }
+
+    loadVideos();
   </script>
 </body>
 </html>
