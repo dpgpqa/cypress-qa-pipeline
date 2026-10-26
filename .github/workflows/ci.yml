@@ -35,7 +35,17 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - name: Run smoke tests
-        run: npm run test:smoke
+        run: |
+          node test-server/server.js &
+          SERVER_PID=$!
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:3000/ > /dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          npx cypress run --spec "cypress/e2e/smoke/**/*.cy.ts" --browser chrome
+          TEST_EXIT=$?
+          kill $SERVER_PID 2>/dev/null || true
+          exit $TEST_EXIT
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -63,7 +73,17 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - name: Run regression tests
-        run: npm run test:regression
+        run: |
+          node test-server/server.js &
+          SERVER_PID=$!
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:3000/ > /dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          npx cypress run --spec "cypress/e2e/regression/**/*.cy.ts"
+          TEST_EXIT=$?
+          kill $SERVER_PID 2>/dev/null || true
+          exit $TEST_EXIT
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -91,7 +111,17 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - name: Run API tests
-        run: npm run test:api
+        run: |
+          node test-server/server.js &
+          SERVER_PID=$!
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:3000/ > /dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          npx cypress run --spec "cypress/e2e/api/**/*.cy.ts"
+          TEST_EXIT=$?
+          kill $SERVER_PID 2>/dev/null || true
+          exit $TEST_EXIT
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -119,7 +149,17 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - name: Run accessibility tests
-        run: npm run test:a11y
+        run: |
+          node test-server/server.js &
+          SERVER_PID=$!
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:3000/ > /dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          npx cypress run --spec "cypress/e2e/accessibility/**/*.cy.ts"
+          TEST_EXIT=$?
+          kill $SERVER_PID 2>/dev/null || true
+          exit $TEST_EXIT
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
@@ -147,7 +187,17 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - name: Run visual regression tests
-        run: npm run test:visual
+        run: |
+          node test-server/server.js &
+          SERVER_PID=$!
+          for i in $(seq 1 30); do
+            if curl -s http://localhost:3000/ > /dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          npx cypress run --spec "cypress/e2e/visual/**/*.cy.ts"
+          TEST_EXIT=$?
+          kill $SERVER_PID 2>/dev/null || true
+          exit $TEST_EXIT
       - name: Upload videos (always)
         uses: actions/upload-artifact@v4
         if: always()
