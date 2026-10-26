@@ -36,8 +36,10 @@ jobs:
       - run: npm ci
       - name: Run smoke tests with server
         run: |
+          set -x
           node test-server/server.js &
           SERVER_PID=$!
+          echo "Started server with PID $SERVER_PID"
           for i in $(seq 1 60); do
             if curl -s http://localhost:3000/ > /dev/null 2>&1; then
               echo "Server ready on attempt $i"
@@ -46,6 +48,8 @@ jobs:
             echo "Waiting for server... ($i/60)"
             sleep 1
           done
+          echo "Server health check after wait:"
+          curl -v http://localhost:3000/ 2>&1 | head -20
           sleep 5
           npx cypress run --spec "cypress/e2e/smoke/**/*.cy.ts" --browser chrome
           TEST_EXIT=$?
