@@ -23,7 +23,7 @@
     "@typescript-eslint/parser": "^8.72.0",
     "cypress": "^16.2.0",
     "cypress-ctrf-json-reporter": "^0.2.0",
-    "eslint": "^8.57.1",
+    "eslint": "^10.13.0",
     "typescript": "^5.9.3"
   }
 }
