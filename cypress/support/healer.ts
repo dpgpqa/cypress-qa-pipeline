@@ -31,7 +31,7 @@ declare global {
       return CSS.escape(value);
     }
     // Fallback for browsers without CSS.escape
-    return value.replace(/([!"#$%&'()*+,./:;<=>?@[\\\]^`{|}~])/g, '\\$1');
+    return value.replace(/([!\"#$%&'()*+,./:;<=>?@[\\\\\\]^`{|}~])/g, '\\\\$1');
   }
 
   // Priority order for selector attributes
@@ -93,10 +93,10 @@ declare global {
         if (attr === 'id') {
           selectors.push(`#${cssEscape(value)}`);
         } else if (attr === 'class') {
-          const classes = value.trim().split(/\s+/).filter(c => c.length > 0);
+          const classes = value.trim().split(/\\s+/).filter(c => c.length > 0);
           classes.forEach(cls => selectors.push(`.${cssEscape(cls)}`));
         } else {
-          selectors.push(`[${attr}="${cssEscape(value)}"]`);
+          selectors.push(`[${attr}=\"${cssEscape(value)}\"]`);
         }
       }
     }
@@ -117,12 +117,12 @@ declare global {
 
   function calculateSimilarity(brokenSelector: string, candidateSelector: string): number {
     const brokenTokens = brokenSelector
-      .replace(/[\[\]#.:]/g, ' ')
-      .split(/\s+/)
+      .replace(/[\\[\\]#.:]/g, ' ')
+      .split(/\\s+/)
       .filter(t => t.length > 1);
     const candidateTokens = candidateSelector
-      .replace(/[\[\]#.:]/g, ' ')
-      .split(/\s+/)
+      .replace(/[\\[\\]#.:]/g, ' ')
+      .split(/\\s+/)
       .filter(t => t.length > 1);
 
     if (brokenTokens.length === 0 || candidateTokens.length === 0) return 0;
@@ -134,10 +134,10 @@ declare global {
   function extractBrokenSelector(errorMessage: string): string | null {
     const patterns = [
       /Expected to find element: [`'](.+?)[`']/,
-      /Timed out retrying after \d+ms: Expected to find element: [`'](.+?)[`']/,
-      /cy\.get\([`'"](.+?)[`'"\]]/,
-      /cy\.find\([`'"](.+?)[`'"\]]/,
-      /cy\.contains\([`'"](.+?)[`'"\]]/,
+      /Timed out retrying after \\d+ms: Expected to find element: [`'](.+?)[`']/,
+      /cy\\.get\\([`'\"](.+?)[`'\"\\]]/,
+      /cy\\.find\\([`'\"](.+?)[`'\"\\]]/,
+      /cy\\.contains\\([`'\"](.+?)[`'\"\\]]/,
     ];
 
     for (const pattern of patterns) {
@@ -145,94 +145,6 @@ declare global {
       if (match) return match[1];
     }
     return null;
-  }
-
-  function isVisible(element: Element): boolean {
-    const rect = element.getBoundingClientRect();
-    const style = window.getComputedStyle(element);
-    return (
-      rect.width > 0 &&
-      rect.height > 0 &&
-      style.visibility !== 'hidden' &&
-      style.display !== 'none' &&
-      style.opacity !== '0'
-    );
-  }
-
-  function getElementSelectors(element: Element): string[] {
-    const selectors: string[] = [];
-
-    // Priority attributes
-    for (const attr of SELECTOR_PRIORITY) {
-      const value = element.getAttribute(attr);
-      if (value) {
-        if (attr === 'id') {
-          selectors.push(`#${cssEscape(value)}`);
-        } else if (attr === 'class') {
-          const classes = value.trim().split(/\s+/).filter(c => c.length > 0);
-          classes.forEach(cls => selectors.push(`.${cssEscape(cls)}`));
-        } else {
-          selectors.push(`[${attr}="${cssEscape(value)}"]`);
-        }
-      }
-    }
-
-    // Tag name as fallback
-    const tagName = element.tagName.toLowerCase();
-    if (tagName) {
-      selectors.push(tagName);
-    }
-
-    return [...new Set(selectors)];
-  }
-
-  function getElementText(element: Element): string {
-    const text = element.textContent?.trim() || '';
-    return text.length > 50 ? text.substring(0, 50) + '...' : text;
-  }
-
-  function calculateSimilarity(brokenSelector: string, candidateSelector: string): number {
-    const brokenTokens = brokenSelector
-      .replace(/[\[\]#.:]/g, ' ')
-      .split(/\s+/)
-      .filter(t => t.length > 1);
-    const candidateTokens = candidateSelector
-      .replace(/[\[\]#.:]/g, ' ')
-      .split(/\s+/)
-      .filter(t => t.length > 1);
-
-    if (brokenTokens.length === 0 || candidateTokens.length === 0) return 0;
-
-    const intersection = brokenTokens.filter(t => candidateTokens.includes(t));
-    return (intersection.length / Math.max(brokenTokens.length, candidateTokens.length)) * 100;
-  }
-
-  function extractBrokenSelector(errorMessage: string): string | null {
-    const patterns = [
-      /Expected to find element: [`'](.+?)[`']/,
-      /Timed out retrying after \d+ms: Expected to find element: [`'](.+?)[`']/,
-      /cy\.get\([`'"](.+?)[`'"\]]/,
-      /cy\.find\([`'"](.+?)[`'"\]]/,
-      /cy\.contains\([`'"](.+?)[`'"\]]/,
-    ];
-
-    for (const pattern of patterns) {
-      const match = errorMessage.match(pattern);
-      if (match) return match[1];
-    }
-    return null;
-  }
-
-  function isVisible(element: Element): boolean {
-    const rect = element.getBoundingClientRect();
-    const style = window.getComputedStyle(element);
-    return (
-      rect.width > 0 &&
-      rect.height > 0 &&
-      style.visibility !== 'hidden' &&
-      style.display !== 'none' &&
-      style.opacity !== '0'
-    );
   }
 
   function getInteractiveElements(): Element[] {
@@ -279,12 +191,6 @@ declare global {
     return result;
   }
 
-  // CSS.escape polyfill
-  function cssEscape(value: string): string {
-    if (typeof CSS !== 'undefined' && CSS.escape) return CSS.escape(value);
-    return value.replace(/([!"#$%&'()*+,./:;<=>?@[\\\]^`{|}~])/g, '\\$1');
-  }
-
   // Main fail handler
   Cypress.on('fail', (error: Error, runnable: Mocha.Runnable) => {
     const errorMessage = error.message || '';
@@ -304,7 +210,7 @@ declare global {
       };
 
       const contextString = JSON.stringify(healerContext, null, 2);
-      const enrichedMessage = `${errorMessage}\n\n${HEALER_CONTEXT_START}\n${contextString}\n${HEALER_CONTEXT_END}`;
+      const enrichedMessage = `${errorMessage}\\n\\n${HEALER_CONTEXT_START}\\n${contextString}\\n${HEALER_CONTEXT_END}`;
 
       const enrichedError = new Error(enrichedMessage);
       enrichedError.name = error.name;
