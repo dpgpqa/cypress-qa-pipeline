@@ -1,2 +1,21 @@
 {
+  "smoke": [
+    {"name": "login.smoke.cy.ts.mp4", "path": "videos/smoke/login.smoke.cy.ts.mp4"}
+  ]
+,
+  "regression": [
+    {"name": "checkout.regression.cy.ts.mp4", "path": "videos/regression/checkout.regression.cy.ts.mp4"}
+  ]
+,
+  "api": [
+    {"name": "api.cy.ts.mp4", "path": "videos/api/api.cy.ts.mp4"}
+  ]
+,
+  "a11y": [
+    {"name": "a11y.cy.ts.mp4", "path": "videos/a11y/a11y.cy.ts.mp4"}
+  ]
+,
+  "visual": [
+    {"name": "visual.cy.ts.mp4", "path": "videos/visual/visual.cy.ts.mp4"}
+  ]
 }
