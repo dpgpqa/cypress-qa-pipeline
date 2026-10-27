@@ -32,8 +32,10 @@ describe('Smoke - Inventory Page', () => {
     cy.get('[data-test="password"]').type('secret_sauce');
     cy.get('[data-test="login-button"]').click();
     cy.url().should('include', '/inventory.html');
-    // Wait only for the main container - let each test wait for its specific element
+    // Wait for inventory page to fully load - wait for main container AND header elements
     cy.get('.inventory_list', { timeout: 20000 }).should('be.visible');
+    cy.get('[data-test="product_sort_container"]', { timeout: 20000 }).should('be.visible');
+    cy.get('[data-test="shopping_cart_link"]', { timeout: 20000 }).should('be.visible');
   });
 
   it('should display all 6 products', () => {
@@ -45,10 +47,10 @@ describe('Smoke - Inventory Page', () => {
   });
 
   it('should have product sort container', () => {
-    cy.get('[data-test="product_sort_container"]', { timeout: 20000 }).should('be.visible');
+    cy.get('[data-test="product_sort_container"]').should('be.visible');
   });
 
   it('should have cart link', () => {
-    cy.get('[data-test="shopping_cart_link"]', { timeout: 20000 }).should('be.visible');
+    cy.get('[data-test="shopping_cart_link"]').should('be.visible');
   });
 });
