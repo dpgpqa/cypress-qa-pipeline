@@ -132,13 +132,13 @@ declare global {
   }
 
   function extractBrokenSelector(errorMessage: string): string | null {
-    const patterns = [
-      /Expected to find element: [`'](.+?)[`']/,
-      /Timed out retrying after \\d+ms: Expected to find element: [`'](.+?)[`']/,
-      /cy\\.get\\([`'\"](.+?)[`'\"\\]]/,
-      /cy\\.find\\([`'\"](.+?)[`'\"\\]]/,
-      /cy\\.contains\\([`'\"](.+?)[`'\"\\]]/,
-    ];
+      const patterns = [
+        /Expected to find element: [`'](.+?)[`']/,
+        /Timed out retrying after \d+ms: Expected to find element: [`'](.+?)[`']/,
+        /cy\.get\([`'\"](.+?)[`'"\]]/,
+        /cy\.find\([`'\"](.+?)[`'"\]]/,
+        /cy\.contains\([`'\"](.+?)[`'"\]]/,
+      ];
 
     for (const pattern of patterns) {
       const match = errorMessage.match(pattern);
