@@ -9,8 +9,13 @@
     "test:api": "cypress run --spec \"cypress/e2e/api/**/*.cy.ts\"",
     "test:a11y": "cypress run --spec \"cypress/e2e/accessibility/**/*.cy.ts\"",
     "test:visual": "cypress run --spec \"cypress/e2e/visual/**/*.cy.ts\"",
+    "test:coverage": "nyc npm test && npx report",
+    "test:coverage:ci": "nyc npm test",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --ext .ts,.js"
+    "lint": "eslint . --ext .ts,.js",
+    "heal": "node scripts/cypress-healer.mjs",
+    "heal:fix": "node scripts/cypress-healer.mjs --write",
+    "report": "npx cypress run --reporter cypress-mochawesome-reporter"
   },
   "devDependencies": {
     "@types/cypress": "^0.1.6",

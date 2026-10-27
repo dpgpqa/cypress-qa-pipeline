@@ -1,0 +1,24 @@
+# Auto-assign reviewers per path
+# Order matters: first matching pattern wins
+
+# Documentation — QA lead
+/*.md] @dpgpqa
+
+# Cypress configuration and CI workflows
+/cypress.config.ts @dpgpqa
+/.github/workflows/ @dpgpqa
+
+# Page Objects — core automation team
+/cypress/pages/ @dpgpqa
+
+# Support files (commands, healer)
+/cypress/support/ @dpgpqa
+
+# Tests — QA engineers
+/cypress/e2e/ @dpgpqa
+
+# Fixtures and test data
+/cypress/fixtures/ @dpgpqa
+
+# Scripts (healer, dashboard)
+/scripts/ @dpgpqa
