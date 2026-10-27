@@ -1,7 +1,5 @@
 {
   "smoke": [
-    {"name": "homepage.smoke.cy.ts.mp4", "path": "videos/smoke/homepage.smoke.cy.ts.mp4"}
-,
     {"name": "login.smoke.cy.ts.mp4", "path": "videos/smoke/login.smoke.cy.ts.mp4"}
   ]
 ,
@@ -11,8 +9,6 @@
 ,
   "api": [
     {"name": "api.cy.ts.mp4", "path": "videos/api/api.cy.ts.mp4"}
-,
-    {"name": "jsonplaceholder.api.cy.ts.mp4", "path": "videos/api/jsonplaceholder.api.cy.ts.mp4"}
   ]
 ,
   "a11y": [
