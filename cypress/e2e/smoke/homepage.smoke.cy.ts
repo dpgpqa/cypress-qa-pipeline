@@ -32,6 +32,8 @@ describe('Smoke - Inventory Page', () => {
     cy.get('[data-test="password"]').type('secret_sauce');
     cy.get('[data-test="login-button"]').click();
     cy.url().should('include', '/inventory.html');
+    // Wait for inventory page to fully load
+    cy.get('.inventory_list').should('be.visible');
   });
 
   it('should display all 6 products', () => {
