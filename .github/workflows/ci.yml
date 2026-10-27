@@ -183,6 +183,8 @@ jobs:
         with:
           ref: gh-pages
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull latest gh-pages
+        run: git pull origin gh-pages || true
       - name: Download smoke videos
         uses: actions/download-artifact@v4
         with:
@@ -215,6 +217,7 @@ jobs:
         continue-on-error: true
       - name: Organize videos and generate videos.json
         run: |
+          rm -rf videos videos.json
           mkdir -p videos/smoke videos/regression videos/api videos/a11y videos/visual
           find /tmp/smoke-videos -name "*.mp4" -exec cp {} videos/smoke/ \; 2>/dev/null || true
           find /tmp/regression-videos -name "*.mp4" -exec cp {} videos/regression/ \; 2>/dev/null || true
