@@ -1,5 +1,4 @@
 import { defineConfig } from 'cypress';
-import { setupCtrfPlugin } from 'cypress-ctrf-json-reporter/plugin';
 
 export default defineConfig({
   e2e: {
@@ -18,9 +17,6 @@ export default defineConfig({
     retries: {
       runMode: 2,
       openMode: 0,
-    },
-    setupNodeEvents(on, config) {
-      setupCtrfPlugin(on);
     },
   },
 });
