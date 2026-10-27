@@ -27,7 +27,11 @@ describe('Smoke - Login Page', () => {
 
 describe('Smoke - Inventory Page', () => {
   beforeEach(() => {
-    cy.visit('/inventory.html');
+    cy.visit('/');
+    cy.get('[data-test="username"]').type('standard_user');
+    cy.get('[data-test="password"]').type('secret_sauce');
+    cy.get('[data-test="login-button"]').click();
+    cy.url().should('include', '/inventory.html');
   });
 
   it('should display all 6 products', () => {
