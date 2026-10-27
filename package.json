@@ -18,11 +18,10 @@
     "report": "npx cypress run --reporter cypress-mochawesome-reporter"
   },
   "devDependencies": {
-    "@types/cypress": "^0.1.6",
     "@types/node": "^20.19.43",
     "@typescript-eslint/eslint-plugin": "^8.72.0",
     "@typescript-eslint/parser": "^8.72.0",
-    "cypress": "^13.0.0",
+    "cypress": "^16.2.0",
     "cypress-ctrf-json-reporter": "^0.2.0",
     "eslint": "^8.57.1",
     "typescript": "^5.9.3"

@@ -1,6 +1,6 @@
 # Cypress QA Pipeline
 
-[![CI](https://github.com/dpgpqa/cypress-qa-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/dpgpqa/cypress-qa-pipeline/actions/workflows/ci.yml) [![Cypress 13](https://img.shields.io/badge/Cypress-13-green)](https://docs.cypress.io/) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Test Reports](https://img.shields.io/badge/Test_Reports-GitHub_Pages-2EAD33?logo=github)](https://dpgpqa.github.io/cypress-qa-pipeline/)
+[![CI](https://github.com/dpgpqa/cypress-qa-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/dpgpqa/cypress-qa-pipeline/actions/workflows/ci.yml) [![Cypress 16](https://img.shields.io/badge/Cypress-16-green)](https://docs.cypress.io/) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Test Reports](https://img.shields.io/badge/Test_Reports-GitHub_Pages-2EAD33?logo=github)](https://dpgpqa.github.io/cypress-qa-pipeline/)
 
 Enterprise-grade Cypress template for **UI testing (SauceDemo)** + **API testing (JSONPlaceholder)**.
 
@@ -50,7 +50,7 @@ The template ships **pre-wired against [saucedemo.com](https://www.saucedemo.com
 
 | Layer | Tool | Cost |
 |---|---|---|
-| E2E, API, visual | [Cypress](https://docs.cypress.io) 13 + TypeScript 5.9 | Free / OSS |
+| E2E, API, visual | [Cypress](https://docs.cypress.io) 16 + TypeScript 5.9 | Free / OSS |
 | Accessibility | [axe-core](https://github.com/dequelabs/axe-core) via custom commands | Free / OSS |
 | Static analysis | TypeScript + ESLint | Free / OSS |
 | Dependency review | GitHub Dependabot | Free on GitHub |
